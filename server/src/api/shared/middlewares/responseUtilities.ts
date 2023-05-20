@@ -1,11 +1,13 @@
 import { NextFunction, Request, Response } from "express";
 
+import { HttpErrorCode } from "../../../errors/httpErrorCodes";
+
 export default function (req: Request, res: Response, next: NextFunction) {
   // attach custom response functions
   res.ok = (payload: any) => customOkHelper(payload, res);
   res.created = (payload: any) => customCreatedHelper(payload, res);
   res.noContent = () => customNoContentHelper(res);
-  res.error = (statusCode: number, message: string, errorCode: string) =>
+  res.error = (statusCode: number, message: string, errorCode: HttpErrorCode) =>
     customErrorHelper(res, statusCode, message, errorCode);
 
   next();
@@ -29,5 +31,7 @@ function customErrorHelper(
   message: string,
   errorCode: string
 ) {
-  return res.status(statusCode).json({ message, errorCode, status: "error" });
+  return res
+    .status(statusCode)
+    .json({ code: errorCode, message, status: "error" });
 }

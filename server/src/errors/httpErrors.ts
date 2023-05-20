@@ -1,16 +1,17 @@
 import {
   BadRequestErrorCode,
   ForbiddenErrorCode,
+  HttpErrorCode,
   ResourceNotFoundErrorCode,
   ServerErrorCode,
   UnauthorizedErrorCode,
 } from "./httpErrorCodes";
 
 export abstract class HttpError extends Error {
-  errorCode: string;
+  errorCode: HttpErrorCode;
   statusCode: number;
 
-  constructor(statusCode: number, message: string, errorCode: string) {
+  constructor(statusCode: number, message: string, errorCode: HttpErrorCode) {
     super(message);
     this.name = this.constructor.name;
     this.errorCode = errorCode;

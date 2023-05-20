@@ -19,3 +19,10 @@ export type ServerErrorCode =
   | "UNEXPECTED_ERROR"
   | "DATABASE_ERROR"
   | "THIRD_PARTY_API_FAILURE";
+
+export type HttpErrorCode =
+  | ResourceNotFoundErrorCode
+  | BadRequestErrorCode
+  | UnauthorizedErrorCode
+  | ForbiddenErrorCode
+  | ServerErrorCode;
