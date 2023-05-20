@@ -23,6 +23,11 @@ app.use("/api/v1", v1Router);
 app.use(errorMiddlewares.errorLogger);
 app.use(errorMiddlewares.errorHandler);
 
+// 404 Handler
+app.use((req, res) => {
+  res.error(404, "Resource not found", "UNKNOWN_ENDPOINT");
+});
+
 const port = process.env.PORT || 8080;
 app.listen(port, () => {
   console.log(`Listening for requests on port ${port} ...`);
