@@ -14,5 +14,8 @@ declare global {
         errorCode: HttpErrorCode
       ): Response;
     }
+    export interface Request {
+      user?: { uid: number };
+    }
   }
 }

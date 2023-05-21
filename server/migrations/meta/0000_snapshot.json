@@ -1,7 +1,7 @@
 {
   "version": "5",
   "dialect": "mysql",
-  "id": "2e8c115c-10d2-45a8-a242-6380269131c3",
+  "id": "da441b32-64bf-4619-a1ff-aed3ca6a5f4b",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "reels": {
@@ -90,47 +90,18 @@
           ],
           "columnsTo": [
             "id"
-          ]
-        }
-      },
-      "compositePrimaryKeys": {}
-    },
-    "social_providers": {
-      "name": "social_providers",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "int",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "name": {
-          "name": "name",
-          "type": "varchar(50)",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "idx_social_providers_name": {
-          "name": "idx_social_providers_name",
-          "columns": [
-            "name"
           ],
-          "isUnique": true
+          "onDelete": "set null"
         }
       },
-      "foreignKeys": {},
       "compositePrimaryKeys": {}
     },
     "user_social_accounts": {
       "name": "user_social_accounts",
       "columns": {
-        "social_provider_id": {
-          "name": "social_provider_id",
-          "type": "int",
+        "provider": {
+          "name": "provider",
+          "type": "enum('google')",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
@@ -152,17 +123,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "user_social_accounts_social_provider_id_social_providers_id_fk": {
-          "name": "user_social_accounts_social_provider_id_social_providers_id_fk",
-          "tableFrom": "user_social_accounts",
-          "tableTo": "social_providers",
-          "columnsFrom": [
-            "social_provider_id"
-          ],
-          "columnsTo": [
-            "id"
-          ]
-        },
         "user_social_accounts_user_id_users_id_fk": {
           "name": "user_social_accounts_user_id_users_id_fk",
           "tableFrom": "user_social_accounts",
@@ -172,14 +132,15 @@
           ],
           "columnsTo": [
             "id"
-          ]
+          ],
+          "onDelete": "cascade"
         }
       },
       "compositePrimaryKeys": {
-        "user_social_accounts_social_provider_id_user_id": {
-          "name": "user_social_accounts_social_provider_id_user_id",
+        "user_social_accounts_provider_user_id": {
+          "name": "user_social_accounts_provider_user_id",
           "columns": [
-            "social_provider_id",
+            "provider",
             "user_id"
           ]
         }
@@ -213,7 +174,7 @@
           "name": "email",
           "type": "varchar(255)",
           "primaryKey": false,
-          "notNull": false,
+          "notNull": true,
           "autoincrement": false
         },
         "password": {

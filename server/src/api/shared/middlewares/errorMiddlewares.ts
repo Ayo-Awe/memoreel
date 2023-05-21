@@ -8,7 +8,7 @@ export function errorLogger(
   res: Response,
   next: NextFunction
 ) {
-  console.log(err.message);
+  if (err instanceof HttpError === false) console.log(err.message);
   next(err);
 }
 

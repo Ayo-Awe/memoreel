@@ -6,7 +6,6 @@ import {
   primaryKey,
   text,
   timestamp,
-  uniqueIndex,
   varchar,
 } from "drizzle-orm/mysql-core";
 
@@ -14,7 +13,7 @@ export const users = mysqlTable("users", {
   id: int("id").primaryKey().notNull().autoincrement(),
   firstName: varchar("first_name", { length: 255 }),
   lastName: varchar("last_name", { length: 255 }),
-  email: varchar("email", { length: 255 }),
+  email: varchar("email", { length: 255 }).notNull(),
   password: varchar("password", { length: 100 }),
   confirmationToken: varchar("confirmation_token", { length: 255 }),
   confirmationTokenExpiresAt: timestamp("confirmation_token_expires_at"),
@@ -39,32 +38,19 @@ export const reels = mysqlTable("reels", {
     "failed",
     "unconfirmed",
   ]).notNull(),
-  userId: int("user_id").references(() => users.id),
+  userId: int("user_id").references(() => users.id, { onDelete: "set null" }),
 });
-
-export const socialProviders = mysqlTable(
-  "social_providers",
-  {
-    id: int("id").primaryKey().notNull().autoincrement(),
-    name: varchar("name", { length: 50 }).notNull(),
-  },
-  (table) => ({
-    nameIndex: uniqueIndex("idx_social_providers_name").on(table.name),
-  })
-);
 
 export const userSocialAccounts = mysqlTable(
   "user_social_accounts",
   {
-    socialProviderId: int("social_provider_id")
-      .notNull()
-      .references(() => socialProviders.id),
+    provider: mysqlEnum("provider", ["google"]).notNull(),
     userId: int("user_id")
       .notNull()
-      .references(() => users.id),
+      .references(() => users.id, { onDelete: "cascade" }),
     socialLoginId: varchar("social_login_id", { length: 100 }),
   },
   (table) => ({
-    cpk: primaryKey(table.socialProviderId, table.userId),
+    cpk: primaryKey(table.provider, table.userId),
   })
 );

@@ -1,5 +1,6 @@
 import {
   BadRequestErrorCode,
+  ConflictErrorCode,
   ForbiddenErrorCode,
   HttpErrorCode,
   ResourceNotFoundErrorCode,
@@ -40,6 +41,11 @@ export class Unauthorized extends HttpError {
 export class Forbidden extends HttpError {
   constructor(message: string, errorCode: ForbiddenErrorCode) {
     super(403, message, errorCode);
+  }
+}
+export class Conflict extends HttpError {
+  constructor(message: string, errorCode: ConflictErrorCode) {
+    super(409, message, errorCode);
   }
 }
 

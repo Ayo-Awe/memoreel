@@ -3,11 +3,13 @@ import { drizzle } from "drizzle-orm/mysql2";
 import * as dotenv from "dotenv";
 dotenv.config();
 
-const pool = mysql.createPool({
+export const dbConfig = {
   user: process.env.DB_USER,
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
-});
+};
+
+const pool = mysql.createPool(dbConfig);
 
 export default drizzle(pool);
