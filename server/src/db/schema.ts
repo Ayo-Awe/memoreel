@@ -1,3 +1,4 @@
+import { relations } from "drizzle-orm";
 import {
   boolean,
   int,
@@ -52,5 +53,27 @@ export const userSocialAccounts = mysqlTable(
   },
   (table) => ({
     cpk: primaryKey(table.provider, table.userId),
+  })
+);
+
+export const usersRelations = relations(users, ({ many }) => ({
+  socialAccounts: many(userSocialAccounts),
+  reels: many(reels),
+}));
+
+export const reelsRelations = relations(reels, ({ one }) => ({
+  author: one(users, {
+    fields: [reels.userId],
+    references: [users.id],
+  }),
+}));
+
+export const socialAccountsRelations = relations(
+  userSocialAccounts,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [userSocialAccounts.userId],
+      references: [users.id],
+    }),
   })
 );
