@@ -1,6 +1,7 @@
 import mysql from "mysql2/promise";
 import { drizzle } from "drizzle-orm/mysql2";
 import * as dotenv from "dotenv";
+import * as schema from "./schema";
 dotenv.config();
 
 export const dbConfig = {
@@ -12,4 +13,4 @@ export const dbConfig = {
 
 const pool = mysql.createPool(dbConfig);
 
-export default drizzle(pool);
+export default drizzle(pool, { schema });

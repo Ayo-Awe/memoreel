@@ -22,7 +22,7 @@ function customCreatedHelper(payload: any, res: Response) {
 }
 
 function customNoContentHelper(res: Response) {
-  return res.status(201).json({ data: null, status: "success" });
+  return res.sendStatus(204);
 }
 
 function customErrorHelper(
