@@ -1,5 +1,5 @@
 import crypto from "crypto";
-import { and, eq, isNull, or, sql } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Request, Response } from "express";
 import _ from "lodash";
 import moment from "moment";
@@ -14,7 +14,6 @@ import {
 } from "../../../errors/httpErrors";
 import emailService from "../../shared/services/email";
 import { createLoginToken } from "../../shared/utils/authHelpers";
-import * as userRepository from "../repositories/user";
 import * as validators from "../validators/auth";
 import * as bcrypt from "bcrypt";
 import { googleClient } from "../../shared/config/googleOauth";
@@ -25,7 +24,9 @@ export async function registerHandler(req: Request, res: Response) {
   if (error) throw new BadRequest(error.message, error.code);
 
   // Check for existing users
-  const existingUser = await userRepository.findByEmail(data.email);
+  const existingUser = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, data.email),
+  });
 
   if (existingUser)
     throw new Conflict(
@@ -35,23 +36,22 @@ export async function registerHandler(req: Request, res: Response) {
   // create verification token and send verification email
   const confirmationToken = crypto
     .createHash("sha256")
-    .update(JSON.stringify(data))
+    .update(JSON.stringify([moment(), data]))
     .digest("hex");
 
   const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
   await db.transaction(async (tx) => {
-    // Create new user
-    const user = await userRepository.create(
-      {
-        ...data,
-        confirmationToken,
-        confirmationTokenExpiresAt,
-      },
-      tx
-    );
+    const hash = await bcrypt.hash(data.password, 10);
+    data.password = hash;
 
-    await emailService.verificationEmail(user.email, confirmationToken);
+    await tx.insert(users).values({
+      ...data,
+      confirmationToken,
+      confirmationTokenExpiresAt,
+    });
+
+    await emailService.verificationEmail(data.email, confirmationToken);
   });
 
   res.created({ message: "Email verification sent" });
@@ -62,10 +62,10 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.confirmationToken, data.token));
+  // Check for existing users
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.confirmationToken, data.token),
+  });
 
   if (!user)
     throw new BadRequest("Invalid token", "INVALID_REQUEST_PARAMETERS");
@@ -88,14 +88,13 @@ export async function verifyEmailHandler(req: Request, res: Response) {
     const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
     await db.transaction(async (tx) => {
-      await userRepository.update(
-        user.id,
-        {
+      await tx
+        .update(users)
+        .set({
           confirmationToken,
           confirmationTokenExpiresAt,
-        },
-        tx
-      );
+        })
+        .where(eq(users.id, user.id));
 
       await emailService.verificationEmail(user.email, confirmationToken);
     });
@@ -106,11 +105,15 @@ export async function verifyEmailHandler(req: Request, res: Response) {
     );
   }
 
-  await userRepository.update(user.id, {
-    verified: true,
-    confirmationToken: null,
-    confirmationTokenExpiresAt: null,
-  });
+  await db
+    .update(users)
+    .set({
+      confirmationToken: null,
+      confirmationTokenExpiresAt: null,
+      verified: true,
+    })
+    .where(eq(users.id, user.id));
+
   res.setHeader("X-API-TOKEN", createLoginToken({ id: user.id }));
 
   res.ok({ user: _.pick(user, ["id", "firstName", "lastName", "email"]) });
@@ -120,10 +123,9 @@ export async function resendVerificationEmail(req: Request, res: Response) {
   const { data, error } = validators.resendVerificationEmailValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, data.email));
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, data.email),
+  });
 
   if (!user) {
     throw new ResourceNotFound(
@@ -142,7 +144,7 @@ export async function resendVerificationEmail(req: Request, res: Response) {
   // create verification token and send verification email
   const confirmationToken = crypto
     .createHash("sha256")
-    .update(JSON.stringify(data))
+    .update(JSON.stringify([data, moment()]))
     .digest("hex");
 
   const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
@@ -152,7 +154,7 @@ export async function resendVerificationEmail(req: Request, res: Response) {
       confirmationToken,
       confirmationTokenExpiresAt,
     };
-    await userRepository.update(user.id, payload, tx);
+    await db.update(users).set(payload).where(eq(users.id, user.id));
     await emailService.verificationEmail(user.email, confirmationToken);
   });
 
@@ -163,10 +165,9 @@ export async function loginHandler(req: Request, res: Response) {
   const { data, error } = validators.loginValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, data.email));
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, data.email),
+  });
 
   if (!user) {
     throw new ResourceNotFound(
@@ -175,6 +176,7 @@ export async function loginHandler(req: Request, res: Response) {
     );
   }
 
+  // Oauth users don't have passwords
   if (!user.password) {
     throw new BadRequest(
       `Invalid email/password.`,
@@ -196,7 +198,7 @@ export async function loginHandler(req: Request, res: Response) {
     // create verification token and send verification email
     const confirmationToken = crypto
       .createHash("sha256")
-      .update(JSON.stringify(data))
+      .update(JSON.stringify([data, moment()]))
       .digest("hex");
 
     const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
@@ -206,11 +208,14 @@ export async function loginHandler(req: Request, res: Response) {
         confirmationToken,
         confirmationTokenExpiresAt,
       };
-      await userRepository.update(user.id, payload, tx);
+      await tx.update(users).set(payload).where(eq(users.id, user.id));
       await emailService.verificationEmail(user.email, confirmationToken);
     });
 
-    throw new Forbidden("Email is already confirmed", "USER_NOT_VERIFIED");
+    throw new Forbidden(
+      "Please confirm your email address.",
+      "USER_NOT_VERIFIED"
+    );
   }
 
   res.setHeader("X-API-TOKEN", createLoginToken({ id: user.id }));
@@ -222,10 +227,9 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
   const { data, error } = validators.forgotPasswordValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.email, data.email));
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, data.email),
+  });
 
   if (!user) {
     throw new ResourceNotFound(
@@ -238,13 +242,13 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
   const payload = {
     passwordToken: crypto
       .createHash("sha256")
-      .update(JSON.stringify(moment()))
+      .update(JSON.stringify([moment(), data]))
       .digest("hex"),
     passwordTokenExpiresAt: moment().add(25, "minutes").toDate(),
   };
 
   await db.transaction(async (tx) => {
-    await userRepository.update(user.id, payload, tx);
+    await tx.update(users).set(payload).where(eq(users.id, user.id));
     await emailService.resetPasswordEmail(user.email, payload.passwordToken);
   });
 
@@ -273,10 +277,9 @@ export async function resetPasswordHandler(req: Request, res: Response) {
   const { data, error } = validators.resetPasswordValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db
-    .select()
-    .from(users)
-    .where(eq(users.passwordToken, data.token));
+  const user = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.passwordToken, data.token),
+  });
 
   if (!user) {
     throw new BadRequest("Invalid token", "INVALID_REQUEST_PARAMETERS");
@@ -288,7 +291,7 @@ export async function resetPasswordHandler(req: Request, res: Response) {
     passwordToken: null,
     passwordTokenExpiresAt: null,
   };
-  await userRepository.update(user.id, payload);
+  await db.update(users).set(payload).where(eq(users.id, user.id));
 
   res.ok({ message: "Password Updated" });
 }
@@ -299,7 +302,9 @@ export async function changePasswordHandler(req: Request, res: Response) {
   const { data, error } = validators.changePasswordValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
-  const [user] = await db.select().from(users).where(eq(users.id, uid));
+  const user = (await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.id, uid),
+  }))!;
 
   if (!user.password) {
     throw new Forbidden("User has no set password", "ACCESS_DENIED");
@@ -310,7 +315,7 @@ export async function changePasswordHandler(req: Request, res: Response) {
     throw new BadRequest("Invalid password", "INVALID_REQUEST_PARAMETERS");
 
   const hash = await bcrypt.hash(data.newPassword, 10);
-  await userRepository.update(user.id, { password: hash });
+  await db.update(users).set({ password: hash }).where(eq(users.id, user.id));
 
   res.ok({ message: "Password changed successfully." });
 }
@@ -328,6 +333,7 @@ export async function googleOauthUrlHandler(req: Request, res: Response) {
 
   res.ok({ authorizationUrl });
 }
+
 export async function googleOauth(req: Request, res: Response) {
   const { data, error } = validators.googleOauthValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
@@ -340,36 +346,37 @@ export async function googleOauth(req: Request, res: Response) {
 
   const { sub, given_name, family_name, email } = ticket.getPayload()!;
 
-  const [existingUser] = await db
-    .select()
-    .from(users)
-    .leftJoin(
-      userSocialAccounts,
-      and(
-        eq(users.id, userSocialAccounts.userId),
-        eq(userSocialAccounts.provider, "google")
-      )
-    )
-    .where(eq(users.email, email!));
-  let user = existingUser?.users;
+  const existingUser = await db.query.users.findFirst({
+    where: (table, { eq }) => eq(table.email, email!),
+    with: {
+      socialAccounts: {
+        where: (table, { eq }) => eq(table.provider, "google"),
+      },
+    },
+  });
+
+  let user: any = existingUser;
+
   if (!existingUser) {
-    user = await userRepository.create({
+    await db.insert(users).values({
       email: email!,
       firstName: given_name,
       lastName: family_name,
       verified: true,
     });
 
+    user = await db.query.users.findFirst({ where: eq(users.email, email!) });
+
     await db.insert(userSocialAccounts).values({
       provider: "google",
       socialLoginId: sub,
       userId: user.id,
     });
-  } else if (!existingUser.user_social_accounts) {
+  } else if (!existingUser.socialAccounts[0]) {
     await db.insert(userSocialAccounts).values({
       provider: "google",
       socialLoginId: sub,
-      userId: existingUser.users.id,
+      userId: existingUser.id,
     });
   }
 
