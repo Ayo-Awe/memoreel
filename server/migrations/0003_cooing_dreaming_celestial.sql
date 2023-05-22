@@ -1,0 +1,1 @@
+ALTER TABLE `reels` ADD `delivery_token` varchar(255);

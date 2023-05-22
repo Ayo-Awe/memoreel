@@ -15,6 +15,20 @@
       "when": 1684682342202,
       "tag": "0001_yielding_joshua_kane",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1684766855562,
+      "tag": "0002_past_pepper_potts",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "5",
+      "when": 1684768272105,
+      "tag": "0003_cooing_dreaming_celestial",
+      "breakpoints": true
     }
   ]
 }

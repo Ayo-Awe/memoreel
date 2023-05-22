@@ -24,7 +24,9 @@ export type ServerErrorCode =
   | "DATABASE_ERROR"
   | "THIRD_PARTY_API_FAILURE";
 
-export type ConflictErrorCode = "EXISTING_USER_EMAIL";
+export type ConflictErrorCode =
+  | "EXISTING_USER_EMAIL"
+  | "REEL_CONFIRMATION_OVERDUE";
 
 export type HttpErrorCode =
   | ResourceNotFoundErrorCode

@@ -1,3 +1,4 @@
+import { DeliveryData } from "../jobs/reel";
 import mailgun, { mgDomain } from "../config/mailgun";
 
 interface MailOptions {
@@ -40,6 +41,28 @@ class EmailService {
       subject: "Reset your password",
       template: "reset-password",
       variables: { link: `https://aweayo.tech?t=${token}` },
+    };
+
+    return await this.sendMail(options);
+  }
+
+  async reelConfirmationEmail(email: string, token: string) {
+    const options: MailOptions = {
+      email,
+      subject: "Reel Confirmation",
+      template: "reel-confirmation",
+      variables: { link: `https://aweayo.tech?t=${token}` },
+    };
+
+    return await this.sendMail(options);
+  }
+
+  async reelDeliveryEmail(email: string, data: DeliveryData) {
+    const options: MailOptions = {
+      email,
+      subject: "Your Reel Has Arrived",
+      template: "reel-delivery",
+      variables: data,
     };
 
     return await this.sendMail(options);

@@ -30,9 +30,10 @@ export const reels = mysqlTable("reels", {
   bucketKey: varchar("bucket_key", { length: 255 }).notNull(),
   title: varchar("title", { length: 255 }).notNull(),
   description: text("description"),
-  confirmationToken: varchar("confirmation_token", { length: 255 }).notNull(),
+  confirmationToken: varchar("confirmation_token", { length: 255 }),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   deliveryDate: timestamp("delivery_date").notNull(),
+  deliveryToken: varchar("delivery_token", { length: 255 }),
   status: mysqlEnum("status", [
     "delivered",
     "shipped",

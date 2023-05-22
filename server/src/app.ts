@@ -6,6 +6,8 @@ import morgan from "morgan";
 import * as errorMiddlewares from "./api/shared/middlewares/errorMiddlewares";
 import responseUtilities from "./api/shared/middlewares/responseUtilities";
 import v1Router from "./api/v1/routes";
+import agenda from "./api/shared/config/agenda";
+import registerJobs from "./api/shared/jobs";
 
 dotenv.config();
 const app = express();
@@ -29,6 +31,9 @@ app.use((req, res) => {
 });
 
 const port = process.env.PORT || 8080;
-app.listen(port, () => {
+app.listen(port, async () => {
   console.log(`Listening for requests on port ${port} ...`);
+  registerJobs(agenda);
+  await agenda.start();
+  console.log("Agenda started successfully");
 });

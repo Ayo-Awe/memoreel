@@ -17,5 +17,13 @@ declare global {
     export interface Request {
       user?: { uid: number };
     }
+    namespace Multer {
+      export interface File {
+        key?: string;
+        bucket?: string;
+        key?: string;
+        acl?: string;
+      }
+    }
   }
 }
