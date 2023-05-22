@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import db from "../../../db";
 import { users } from "../../../db/schema";
 import { eq } from "drizzle-orm";
-import * as validator from "../validators/profile";
+import * as validator from "../validators/me";
 import { BadRequest } from "../../../errors/httpErrors";
 
 class UserController {

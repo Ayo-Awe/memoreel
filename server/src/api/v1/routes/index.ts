@@ -2,7 +2,7 @@ import express from "express";
 
 import { welcomeHandler } from "../controllers";
 import authRouter from "./auth";
-import profileRouter from "./profile";
+import profileRouter from "./me";
 
 const router = express.Router();
 
