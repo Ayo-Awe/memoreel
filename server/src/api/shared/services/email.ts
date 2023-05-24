@@ -19,7 +19,7 @@ class EmailService {
       to: options.email,
       subject: options.subject,
       template: options.template,
-      from: "Memoreel <pupoawe@icloud.com>",
+      from: "Ayo from Memoreel <pupoawe@icloud.com>",
       "t:variables": JSON.stringify(options.variables),
     });
   }

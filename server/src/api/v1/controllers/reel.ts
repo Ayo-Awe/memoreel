@@ -42,16 +42,21 @@ class ReelController {
       status: "unconfirmed",
     };
 
+    let reelId: number;
+
     // Create a new reel and send reel confirmation email
     await db.transaction(async (tx) => {
-      await tx.insert(reels).values(payload);
+      reelId = (await tx.insert(reels).values(payload))[0].insertId;
       await emailService.reelConfirmationEmail(
         payload.userEmail,
         payload.confirmationToken!
       );
     });
 
-    res.created({ message: "Reel created. Kindly confirm your email" });
+    res.created({
+      message: "Reel created. Kindly confirm your email",
+      reelId: reelId!,
+    });
   }
 
   async reelConfirmationHandler(req: Request, res: Response) {
@@ -99,7 +104,6 @@ class ReelController {
         bucketKey: false,
         deliveryToken: false,
         confirmationToken: false,
-        userId: false,
       },
     });
 
@@ -136,6 +140,40 @@ class ReelController {
     );
 
     res.ok({ url });
+  }
+
+  async resendConfirmationEmail(req: Request, res: Response) {
+    const { id } = req.params;
+
+    const reel = await db.query.reels.findFirst({
+      where: (table, { eq }) => eq(table.id, parseInt(id)),
+    });
+
+    if (!reel) {
+      throw new ResourceNotFound("Reel not found", "RESOURCE_NOT_FOUND");
+    }
+
+    if (reel.status !== "unconfirmed") {
+      throw new Conflict("Reel already confirmed", "REEL_ALREADY_CONFIRMED");
+    }
+
+    if (moment(reel.deliveryDate).isBefore()) {
+      throw new Conflict(
+        "Cannot confirm reel after delivery date has passed.",
+        "REEL_CONFIRMATION_OVERDUE"
+      );
+    }
+
+    const token = createToken();
+    await db.transaction(async (tx) => {
+      await tx
+        .update(reels)
+        .set({ confirmationToken: token })
+        .where(eq(reels.id, reel.id));
+      await emailService.reelConfirmationEmail(reel.userEmail, token);
+    });
+
+    res.ok({ message: "Email sent successfully" });
   }
 }
 

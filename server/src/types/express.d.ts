@@ -15,7 +15,7 @@ declare global {
       ): Response;
     }
     export interface Request {
-      user?: { uid: number };
+      user?: { id: number; email: string };
     }
     namespace Multer {
       export interface File {

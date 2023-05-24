@@ -40,7 +40,6 @@ export const reels = mysqlTable("reels", {
     "failed",
     "unconfirmed",
   ]).notNull(),
-  userId: int("user_id").references(() => users.id, { onDelete: "set null" }),
 });
 
 export const userSocialAccounts = mysqlTable(
@@ -64,8 +63,8 @@ export const usersRelations = relations(users, ({ many }) => ({
 
 export const reelsRelations = relations(reels, ({ one }) => ({
   author: one(users, {
-    fields: [reels.userId],
-    references: [users.id],
+    fields: [reels.userEmail],
+    references: [users.email],
   }),
 }));
 

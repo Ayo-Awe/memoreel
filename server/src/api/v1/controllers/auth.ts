@@ -297,13 +297,13 @@ export async function resetPasswordHandler(req: Request, res: Response) {
 }
 
 export async function changePasswordHandler(req: Request, res: Response) {
-  const { uid } = req.user!;
+  const { id } = req.user!;
 
   const { data, error } = validators.changePasswordValidator(req.body);
   if (error) throw new BadRequest(error.message, error.code);
 
   const user = (await db.query.users.findFirst({
-    where: (table, { eq }) => eq(table.id, uid),
+    where: (table, { eq }) => eq(table.id, id),
   }))!;
 
   if (!user.password) {

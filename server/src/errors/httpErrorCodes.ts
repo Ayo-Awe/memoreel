@@ -26,7 +26,8 @@ export type ServerErrorCode =
 
 export type ConflictErrorCode =
   | "EXISTING_USER_EMAIL"
-  | "REEL_CONFIRMATION_OVERDUE";
+  | "REEL_CONFIRMATION_OVERDUE"
+  | "REEL_ALREADY_CONFIRMED";
 
 export type HttpErrorCode =
   | ResourceNotFoundErrorCode
