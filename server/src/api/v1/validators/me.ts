@@ -48,7 +48,7 @@ export const createReelValidator = function (payload: any) {
       })
       .datetime("date must be a valid date string")
       .refine(
-        (date) => moment(date).diff(moment(), "d") > MINIMUM_DAYS_TO_DELIVERY,
+        (date) => moment(date).diff(moment(), "d") >= MINIMUM_DAYS_TO_DELIVERY,
         `delivery date must be at least ${MINIMUM_DAYS_TO_DELIVERY} day(s) away.`
       ),
   });

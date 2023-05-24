@@ -63,7 +63,6 @@ class UserController {
       title: data.title,
       deliveryDate: new Date(data.deliveryDate),
       description: data.description,
-      confirmationToken: createToken(),
       status: "shipped",
     };
 
