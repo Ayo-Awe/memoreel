@@ -1,15 +1,11 @@
 import cors from "cors";
-import dotenv from "dotenv";
 import express from "express";
 import morgan from "morgan";
 
 import * as errorMiddlewares from "./api/shared/middlewares/errorMiddlewares";
 import responseUtilities from "./api/shared/middlewares/responseUtilities";
 import v1Router from "./api/v1/routes";
-import agenda from "./api/shared/config/agenda";
-import registerJobs from "./api/shared/jobs";
 
-dotenv.config();
 const app = express();
 
 // Middlewares
@@ -30,10 +26,4 @@ app.use((req, res) => {
   res.error(404, "Resource not found", "UNKNOWN_ENDPOINT");
 });
 
-const port = process.env.PORT || 8080;
-app.listen(port, async () => {
-  console.log(`Listening for requests on port ${port} ...`);
-  registerJobs(agenda);
-  await agenda.start();
-  console.log("Agenda started successfully");
-});
+export default app;
