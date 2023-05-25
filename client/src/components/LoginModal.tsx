@@ -1,3 +1,4 @@
+import useAuthStore from "@/state-management/auth/store";
 import {
   Modal,
   ModalOverlay,
@@ -16,6 +17,7 @@ import {
   FormErrorMessage,
   FormHelperText,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 
 interface Props {
   isOpen: boolean;
@@ -23,6 +25,8 @@ interface Props {
 }
 
 export default function LoginModal({ isOpen, onClose }: Props) {
+  const { login } = useAuthStore();
+  const router = useRouter();
   return (
     <>
       <Modal isOpen={isOpen} onClose={onClose} size={["xs", "md"]}>
@@ -43,7 +47,22 @@ export default function LoginModal({ isOpen, onClose }: Props) {
               <Input type="email" placeholder="Enter email address" />
               <FormLabel mt="5">Password</FormLabel>
               <Input type="password" placeholder="Enter password" />
-              <Button mt={"5"} colorScheme="blue" w={"full"} variant="solid">
+              <Button
+                mt={"5"}
+                colorScheme="blue"
+                w={"full"}
+                variant="solid"
+                onClick={() => {
+                  login({
+                    firstName: "Ayo",
+                    lastName: "Awe",
+                    email: "pupoawe@gmail.com",
+                    id: 1,
+                    token: "joiw",
+                  });
+                  router.push("/dashboard");
+                }}
+              >
                 Log in
               </Button>
               <Button mt={"3"} colorScheme="blue" w={"full"} variant="outline">

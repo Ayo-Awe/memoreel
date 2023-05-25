@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 import SignupModal from "@/components/SignupModal";
 import Image from "next/image";
 import { useState } from "react";

@@ -12,3 +12,9 @@ section.main {
   max-width: 1200px;
   margin: 0 auto;
 }
+
+hr.footer {
+  max-width: 1200px;
+  margin: 0 auto;
+  border: 2px dashed #9c9c9c;
+}

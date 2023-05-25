@@ -1,6 +1,9 @@
 "use client";
 
+import Footer from "@/components/Footer";
+import LoginModal from "@/components/LoginModal";
 import NavBar from "@/components/NavBar";
+import SignupModal from "@/components/SignupModal";
 import { useState } from "react";
 
 export default function MainLayout({
@@ -12,17 +15,24 @@ export default function MainLayout({
   const [isLoginModalOpen, setLoginModalOpen] = useState(false);
 
   return (
-    <section className="main">
-      <NavBar
-        isLoginModalOpen={isLoginModalOpen}
-        isSignupModalOpen={isSignupModalOpen}
-        openSignupModal={() => setSignupModalOpen(true)}
-        openLoginModal={() => setLoginModalOpen(true)}
-        onLoginModalClose={() => setLoginModalOpen(false)}
-        onSignupModalClose={() => setSignupModalOpen(false)}
+    <>
+      <SignupModal
+        isOpen={isSignupModalOpen}
+        onClose={() => setSignupModalOpen(false)}
       />
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+      />
+      <section className="main">
+        <NavBar
+          onSignupClick={() => setSignupModalOpen(true)}
+          onLoginClick={() => setLoginModalOpen(true)}
+        />
 
-      {children}
-    </section>
+        {children}
+      </section>
+      <Footer />
+    </>
   );
 }

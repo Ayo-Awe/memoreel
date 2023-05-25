@@ -1,13 +1,19 @@
 "use client";
-import LoginModal from "@/components/LoginModal";
-import SignupModal from "@/components/SignupModal";
-import { useState } from "react";
+import useAuthStore from "@/state-management/auth/store";
+import { redirect } from "next/navigation";
 
 const Page = () => {
-  const [isSignupOpen, setSignupOpen] = useState(false);
-  const [isLoginOpen, setLoginOpen] = useState(false);
+  const { user } = useAuthStore();
 
-  return <></>;
+  if (!user) {
+    redirect("/");
+  }
+
+  return (
+    <>
+      <p>hello</p>
+    </>
+  );
 };
 
 export default Page;
