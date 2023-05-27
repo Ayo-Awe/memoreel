@@ -8,7 +8,7 @@ export default function Footer() {
     <>
       <hr className="footer" />
       <Flex
-        py={"4"}
+        py={"8"}
         flexDirection={"column"}
         alignItems={"center"}
         bg={"#fafafa"}

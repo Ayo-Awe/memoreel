@@ -4,6 +4,7 @@ import Footer from "@/components/Footer";
 import LoginModal from "@/components/LoginModal";
 import NavBar from "@/components/NavBar";
 import SignupModal from "@/components/SignupModal";
+import { Box } from "@chakra-ui/react";
 import { useState } from "react";
 
 export default function MainLayout({
@@ -29,8 +30,7 @@ export default function MainLayout({
           onSignupClick={() => setSignupModalOpen(true)}
           onLoginClick={() => setLoginModalOpen(true)}
         />
-
-        {children}
+        <Box paddingY={"10"}>{children}</Box>
       </section>
       <Footer />
     </>
