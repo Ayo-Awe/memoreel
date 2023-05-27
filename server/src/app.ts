@@ -10,7 +10,7 @@ const app = express();
 
 // Middlewares
 app.use(responseUtilities);
-app.use(cors({ origin: "*" }));
+app.use(cors({ origin: "*", exposedHeaders: ["X-API-TOKEN"] }));
 app.use(express.json());
 app.use(morgan("dev"));
 
