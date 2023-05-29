@@ -15,6 +15,7 @@ import agenda from "../../shared/config/agenda";
 import moment from "moment";
 import { s3Bucket, s3Client } from "../../shared/config/aws";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
+import _ from "lodash";
 
 const REEL_URL_EXPIRES_IN = 15 * 60;
 
@@ -70,7 +71,7 @@ class ReelController {
       throw new BadRequest("Invalid token", "INVALID_REQUEST_PARAMETERS");
     }
 
-    if (moment(reel.deliveryDate).isAfter()) {
+    if (moment(reel.deliveryDate).isBefore()) {
       await db
         .update(reels)
         .set({ confirmationToken: null })
@@ -101,7 +102,6 @@ class ReelController {
     const reel = await db.query.reels.findFirst({
       where: (table, { eq }) => eq(table.deliveryToken, token),
       columns: {
-        bucketKey: false,
         deliveryToken: false,
         confirmationToken: false,
       },
@@ -111,7 +111,18 @@ class ReelController {
       throw new ResourceNotFound("Reel not found", "RESOURCE_NOT_FOUND");
     }
 
-    res.ok({ reel });
+    const bucketParams = {
+      Bucket: s3Bucket,
+      Key: reel.bucketKey,
+    };
+
+    const url = await getSignedUrl(
+      s3Client,
+      new GetObjectCommand(bucketParams),
+      { expiresIn: REEL_URL_EXPIRES_IN }
+    );
+
+    res.ok({ reel: _.omit(reel, ["bucketKey"]), url });
   }
 
   async getReelVideo(req: Request, res: Response) {
