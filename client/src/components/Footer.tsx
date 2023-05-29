@@ -5,7 +5,7 @@ const satoshi = localFont({ src: "./Satoshi-Variable.ttf" });
 
 export default function Footer() {
   return (
-    <>
+    <Box flexShrink={0}>
       <hr className="footer" />
       <Flex
         py={"8"}
@@ -32,6 +32,6 @@ export default function Footer() {
           &copy; Memoreel 2023, All rights reserved.
         </Text>
       </Flex>
-    </>
+    </Box>
   );
 }

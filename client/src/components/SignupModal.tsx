@@ -73,7 +73,9 @@ export default function SignupModal({ isOpen, onClose }: Props) {
   }
 
   useEffect(() => {
-    setAlert(null);
+    if (isSubmitting) {
+      setAlert(null);
+    }
   }, [isSubmitting]);
 
   async function handleGoogle() {

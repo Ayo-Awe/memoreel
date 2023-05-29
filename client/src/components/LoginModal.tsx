@@ -75,6 +75,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
       const token = response.headers["x-api-token"];
       const user = response.data.data.user;
 
+      setAlert(null);
       login({ ...user, token });
       handleClose();
       router.push("/dashboard");

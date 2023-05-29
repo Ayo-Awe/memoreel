@@ -9,6 +9,7 @@ import {
   MenuItem,
   MenuList,
 } from "@chakra-ui/react";
+import Link from "next/link";
 
 interface Props {
   onSignupClick: () => void;
@@ -40,7 +41,9 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
               {displayName}
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<ViewIcon />}>My videos</MenuItem>
+              <MenuItem icon={<ViewIcon />} href={"/reels"} as={Link}>
+                My videos
+              </MenuItem>
               <MenuItem>Manage account</MenuItem>
               <MenuItem>Sign out</MenuItem>
             </MenuList>
