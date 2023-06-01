@@ -29,7 +29,9 @@ class EmailService {
       email,
       subject: "Verify Your Email",
       template: "verification",
-      variables: { link: `http://localhost:3000/auth/verify?token=${token}` },
+      variables: {
+        link: `${process.env.CLIENT_URL}/auth/verify?token=${token}`,
+      },
     };
 
     return await this.sendMail(options);
@@ -40,7 +42,9 @@ class EmailService {
       email,
       subject: "Reset your password",
       template: "reset-password",
-      variables: { link: `https://aweayo.tech?t=${token}` },
+      variables: {
+        link: `${process.env.CLIENT_URL}/auth/reset-password?token=${token}`,
+      },
     };
 
     return await this.sendMail(options);
@@ -51,7 +55,9 @@ class EmailService {
       email,
       subject: "Reel Confirmation",
       template: "reel-confirmation",
-      variables: { link: `https://aweayo.tech?t=${token}` },
+      variables: {
+        link: `${process.env.CLIENT_URL}/reels/confirm?token=${token}`,
+      },
     };
 
     return await this.sendMail(options);
