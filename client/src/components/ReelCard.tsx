@@ -2,40 +2,62 @@ import {
   Box,
   Button,
   ButtonGroup,
-  Flex,
+  Center,
+  Grid,
+  GridItem,
   Icon,
-  Stack,
   Text,
   Tooltip,
 } from "@chakra-ui/react";
+import moment from "moment";
+import Link from "next/link";
 import { FaClock, FaTrash } from "react-icons/fa";
 
 import { HiFilm } from "react-icons/hi";
-const ReelCard = () => {
+
+interface Props {
+  id: number;
+  title: string;
+  createdAt: string;
+  deliveryDate: string;
+  deliveryToken: string;
+  status: string;
+  onDelete: (data: { id: number; status: string }) => void;
+}
+const ReelCard = ({
+  title,
+  createdAt,
+  deliveryDate,
+  status,
+  onDelete,
+  deliveryToken,
+  id,
+}: Props) => {
   return (
-    <Flex
-      justifyContent={"space-between"}
-      alignItems={"center"}
+    <Grid
       border={"1px"}
       borderColor={"#d8d8d8"}
       rounded={"lg "}
       padding={"4"}
+      templateColumns={"repeat(6, 1fr)"}
+      alignItems={"center"}
+      mb={"8"}
     >
       <Icon as={HiFilm} fontSize={"8xl"} color={"#d8d8d8"} />
+      <Box textAlign={"center"} as={GridItem} colSpan={1}>
+        <Text fontSize={"sm"}>Title</Text>
+        <Text>{title}</Text>
+      </Box>
       <Box textAlign={"center"}>
         <Text fontSize={"sm"}>Date created</Text>
-        <Text>2nd March, 2023</Text>
+        <Text>{moment(createdAt).format("Do MMMM, YYYY")}</Text>
       </Box>
-      <Box textAlign={"center"}>
+      <Box textAlign={"center"} as={GridItem} colSpan={1}>
         <Text fontSize={"sm"}>Delivery Date</Text>
-        <Text>2nd March, 2023</Text>
-      </Box>
-      <Box textAlign={"center"}>
-        <Text fontSize={"sm"}>Recepients 1</Text>
-        <Text>pupoawe@gmail.com</Text>
+        <Text>{moment(deliveryDate).format("Do MMMM, YYYY")}</Text>
       </Box>
 
-      <ButtonGroup>
+      <Center w={"full"} as={GridItem} colSpan={2}>
         <Tooltip
           label="You can't watch this video until it's delivered"
           hasArrow
@@ -43,13 +65,18 @@ const ReelCard = () => {
           maxW={"12rem"}
           bgColor={"#0096c6"}
           color={"white"}
+          isDisabled={status === "delivered"}
         >
           <Button
             bgColor={"#CCEAF4"}
             color={"#0096c6"}
             _hover={{ bg: "#d2f0fa" }}
             rightIcon={<FaClock />}
-            isDisabled={true}
+            isDisabled={status !== "delivered"}
+            as={Link}
+            href={`/reels/${deliveryToken}`}
+            maxW={"9rem"}
+            w={"full"}
           >
             Watch Now
           </Button>
@@ -58,12 +85,17 @@ const ReelCard = () => {
           variant={"outline"}
           colorScheme="red"
           border={"2px"}
+          w={"full"}
+          maxW={"9rem"}
+          flexGrow={1}
           rightIcon={<FaTrash />}
+          ml={"4"}
+          onClick={() => onDelete({ id, status })}
         >
           Delete
         </Button>
-      </ButtonGroup>
-    </Flex>
+      </Center>
+    </Grid>
   );
 };
 

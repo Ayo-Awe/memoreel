@@ -1,7 +1,5 @@
-import useAuthStore from "@/stateManagement/auth/store";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Alert, AlertIcon, AlertDescription } from "@chakra-ui/react";
 import {
   Modal,
   ModalOverlay,
@@ -17,7 +15,6 @@ import {
 import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 import { z } from "zod";
 import apiClient from "@/services/apiClient";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 const schema = z.object({
@@ -32,24 +29,24 @@ const schema = z.object({
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-}
-
-interface AlertMessage {
-  message: string;
-  status: "info" | "error";
+  onSubmit: (data: LoginFormData) => void;
+  isLoading: boolean;
 }
 
 type LoginFormData = z.infer<typeof schema>;
 
-export default function LoginModal({ isOpen, onClose }: Props) {
-  const { login } = useAuthStore();
-  const [alert, setAlert] = useState<AlertMessage | null>(null);
+export default function LoginModal({
+  isOpen,
+  onClose,
+  isLoading,
+  onSubmit,
+}: Props) {
   const router = useRouter();
   const {
     handleSubmit,
     register,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(schema),
   });
@@ -69,49 +66,13 @@ export default function LoginModal({ isOpen, onClose }: Props) {
     }
   }
 
-  async function onSubmit(data: LoginFormData) {
-    try {
-      const response = await apiClient.post("/auth/login", data);
-      const token = response.headers["x-api-token"];
-      const user = response.data.data.user;
-
-      setAlert(null);
-      login({ ...user, token });
-      handleClose();
-      router.push("/dashboard");
-    } catch (error: any) {
-      const code = error?.response.data?.code;
-      switch (code) {
-        case "INVALID_REQUEST_PARAMETERS":
-        case "RESOURCE_NOT_FOUND":
-          setAlert({ message: "Invalid email/password", status: "error" });
-          break;
-        case "USER_NOT_VERIFIED":
-          setAlert({
-            message: `To proceed, please verify your email. An email was sent to ${data.email}.`,
-            status: "info",
-          });
-          break;
-        default:
-          setAlert({ message: "An unexpected error occured", status: "error" });
-          break;
-      }
-    }
-  }
-
   return (
     <>
-      {alert && (
-        <Alert status={alert.status} zIndex={"popover"}>
-          <AlertIcon />
-          <AlertDescription>{alert.message}</AlertDescription>
-        </Alert>
-      )}
       <Modal
         isOpen={isOpen}
         onClose={handleClose}
         size={["xs", "md"]}
-        closeOnOverlayClick={!isSubmitting}
+        closeOnOverlayClick={!isLoading}
       >
         <ModalOverlay />
         <ModalContent>
@@ -123,7 +84,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
               Don&apos;t have an account? Sign Up
             </Text>
           </ModalHeader>
-          <ModalCloseButton isDisabled={isSubmitting} />
+          <ModalCloseButton isDisabled={isLoading} />
           <ModalBody>
             <form onSubmit={handleSubmit(onSubmit)}>
               <FormControl isInvalid={Boolean(errors.email || errors.password)}>
@@ -156,7 +117,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                 w={"full"}
                 variant="solid"
                 type="submit"
-                isLoading={isSubmitting}
+                isLoading={isLoading}
               >
                 Log in
               </Button>
@@ -165,7 +126,7 @@ export default function LoginModal({ isOpen, onClose }: Props) {
                 colorScheme="blue"
                 w={"full"}
                 variant="outline"
-                isDisabled={isSubmitting}
+                isDisabled={isLoading}
                 onClick={handleGoogle}
               >
                 Log in with Google

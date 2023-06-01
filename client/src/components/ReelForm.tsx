@@ -5,15 +5,55 @@ import {
   Flex,
   FormControl,
   FormLabel,
+  FormErrorMessage,
   Input,
   Textarea,
 } from "@chakra-ui/react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import moment from "moment";
+import { useForm } from "react-hook-form";
 import { HiOutlineCloudArrowUp } from "react-icons/hi2";
+import { z } from "zod";
 
-const ReelForm = ({ email }: { email?: string }) => {
+const twoDaysFromNow = moment().add(2, "d").toDate();
+
+const schema = z.object({
+  title: z.string().nonempty(),
+  email: z.string().email(),
+  description: z.string().optional(),
+  deliveryDate: z.date().min(twoDaysFromNow),
+  video: z
+    .custom<FileList>((v: any) => v[0] instanceof File, {
+      message: "Video is required",
+    })
+    .transform((v: FileList) => v[0]),
+});
+
+type ReelFormData = z.infer<typeof schema>;
+
+interface Props {
+  email?: string;
+  onSubmit: (data: ReelFormData) => void;
+  isLoading: boolean;
+}
+
+const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
+  const {
+    handleSubmit,
+    register,
+    reset,
+    watch,
+    formState: { errors, isValid },
+  } = useForm<ReelFormData>({
+    resolver: zodResolver(schema),
+    defaultValues: {
+      email: email,
+    },
+  });
+
   return (
-    <form>
-      <FormControl>
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <FormControl isInvalid={!isValid} isDisabled={isLoading}>
         <Flex gap={"3rem"}>
           <AspectRatio ratio={1.576} flexGrow={6}>
             <FormLabel
@@ -26,51 +66,81 @@ const ReelForm = ({ email }: { email?: string }) => {
               <HiOutlineCloudArrowUp fontSize={"3.5rem"} color="#0096C6" />
               <Input
                 type="file"
+                accept="video/*"
                 border={"dashed"}
                 textAlign={"center"}
                 display={"none"}
+                {...register("video")}
+                isInvalid={Boolean(errors.video)}
               />
+              {watch("video") && watch("video").length > 0 ? (
+                // @ts-ignore
+                watch("video")[0].name
+              ) : (
+                <FormErrorMessage>
+                  {errors.video && errors.video.message}
+                </FormErrorMessage>
+              )}
             </FormLabel>
           </AspectRatio>
+
           <Box maxW={"2xl"} marginX={"auto"} color={"#909090"} flexGrow={1}>
             <FormLabel htmlFor="form-title">Video Title</FormLabel>
             <Input
               type="text"
               id="form-title"
               placeholder="Enter title of the video"
+              {...register("title")}
+              isInvalid={Boolean(errors.title)}
             />
-            <FormLabel mt={"2rem"} htmlFor="form-description">
+            <FormErrorMessage>
+              {errors.title && errors.title.message}
+            </FormErrorMessage>
+            <FormLabel mt={"1rem"} htmlFor="form-description">
               Video Description (optional)
             </FormLabel>
             <Textarea
-              name="description"
               placeholder="This video is to..."
               id="form-description"
+              {...register("description")}
+              isInvalid={Boolean(errors.description)}
             />
-            <FormLabel mt={"2rem"} htmlFor="form-email">
+            <FormErrorMessage>
+              {errors.description && errors.description.message}
+            </FormErrorMessage>
+            <FormLabel mt={"1rem"} htmlFor="form-email">
               Enter your email address (optional)
             </FormLabel>
             <Input
               id="form-email"
               type="email"
               isDisabled={Boolean(email)}
-              value={email}
               placeholder="Email address"
+              {...register("email")}
+              isInvalid={Boolean(errors.email)}
             />
-            <FormLabel mt={"2rem"} htmlFor="form-date">
+            <FormErrorMessage>
+              {errors.email && errors.email.message}
+            </FormErrorMessage>
+            <FormLabel mt={"1rem"} htmlFor="form-date">
               Select a date to receive the video
             </FormLabel>
             <Input
               id="form-date"
               type="date"
-              isDisabled={Boolean(email)}
-              value={email}
+              {...register("deliveryDate", { valueAsDate: true })}
+              isInvalid={Boolean(errors.deliveryDate)}
             />
+            <FormErrorMessage>
+              {errors.deliveryDate && errors.deliveryDate.message}
+            </FormErrorMessage>
             <Button
               mt={"2rem"}
               width={"full"}
               bgColor={"#0096C6"}
               color={"white"}
+              type="submit"
+              isLoading={isLoading}
             >
               Send Now
             </Button>

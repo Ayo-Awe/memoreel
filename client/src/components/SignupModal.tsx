@@ -10,17 +10,12 @@ import {
   ModalFooter,
   SimpleGrid,
   Button,
-  Alert,
-  AlertIcon,
-  AlertDescription,
 } from "@chakra-ui/react";
 import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import apiClient from "@/services/apiClient";
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 
 const schema = z
   .object({
@@ -48,79 +43,43 @@ const schema = z
 
 type SignUpFormData = z.infer<typeof schema>;
 
-interface AlertMessage {
-  status: "info" | "error";
-  message: string;
-}
 interface Props {
   isOpen: boolean;
   onClose: () => void;
+  onSubmit: (data: SignUpFormData) => void;
+  isLoading: boolean;
 }
 
-export default function SignupModal({ isOpen, onClose }: Props) {
+export default function SignupModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  isLoading,
+}: Props) {
   const {
     handleSubmit,
     register,
     formState: { errors, isSubmitting, isValid },
     reset,
   } = useForm<SignUpFormData>({ resolver: zodResolver(schema) });
-  const [alert, setAlert] = useState<AlertMessage | null>(null);
-  const router = useRouter();
 
   function handleClose() {
     reset();
     onClose();
   }
 
-  useEffect(() => {
-    if (isSubmitting) {
-      setAlert(null);
-    }
-  }, [isSubmitting]);
-
   async function handleGoogle() {
     try {
       const response = await apiClient.get("/auth/oauth/google");
       console.log();
-      router.push(response.data.data.authorizationUrl);
+      // router.push(response.data.data.authorizationUrl);
     } catch (error: any) {
       console.log(error.message);
     }
   }
 
-  async function onSubmit(data: SignUpFormData) {
-    try {
-      await apiClient.post("/auth/register", data);
-      setAlert({
-        message: `An email was sent to ${data.email}, kindly confirm your email.`,
-        status: "info",
-      });
-      handleClose();
-    } catch (error: any) {
-      const code = error?.response.data?.code;
-      if (code === "EXISTING_USER_EMAIL") {
-        setAlert({
-          message: "An account with this email already exists",
-          status: "error",
-        });
-      } else {
-        setAlert({
-          message: "An unexpected error occured",
-          status: "error",
-        });
-      }
-    }
-  }
-
   return (
     <>
-      {alert && (
-        <Alert status={alert.status} zIndex={"popover"}>
-          <AlertIcon />
-          <AlertDescription>{alert?.message}</AlertDescription>
-        </Alert>
-      )}
-
       <Modal isOpen={isOpen} onClose={handleClose} size={["xs", "md"]}>
         <ModalOverlay />
         <ModalContent>
@@ -178,7 +137,7 @@ export default function SignupModal({ isOpen, onClose }: Props) {
                   w={"full"}
                   variant="solid"
                   type="submit"
-                  isLoading={isSubmitting}
+                  isLoading={isLoading}
                 >
                   Sign Up
                 </Button>

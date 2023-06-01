@@ -1,3 +1,4 @@
+import useStore from "@/hooks/useStore";
 import useAuthStore from "@/stateManagement/auth/store";
 import { ChevronDownIcon, ViewIcon } from "@chakra-ui/icons";
 import {
@@ -10,6 +11,7 @@ import {
   MenuList,
 } from "@chakra-ui/react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface Props {
   onSignupClick: () => void;
@@ -17,18 +19,15 @@ interface Props {
 }
 
 export default function NavBar({ onSignupClick, onLoginClick }: Props) {
-  const { user } = useAuthStore();
-  const displayName =
-    user?.firstName && user?.lastName
-      ? `${user.firstName} ${user.lastName}`
-      : user?.email;
+  const authStore = useStore(useAuthStore, (state) => state);
+  const router = useRouter();
 
   return (
     <>
       <Flex justifyContent={"space-between"}>
         <Image src="/logo.svg" alt="logo" />
 
-        {user ? (
+        {authStore?.user ? (
           <Menu>
             <MenuButton
               as={Button}
@@ -38,14 +37,23 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
               borderColor={"#474747"}
               color={"#474747"}
             >
-              {displayName}
+              {authStore.user.email}
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<ViewIcon />} href={"/reels"} as={Link}>
+              <MenuItem icon={<ViewIcon />} href={"/dashboard/reels"} as={Link}>
                 My videos
               </MenuItem>
-              <MenuItem>Manage account</MenuItem>
-              <MenuItem>Sign out</MenuItem>
+              <MenuItem href={"/dashboard/settings"} as={Link}>
+                Manage account
+              </MenuItem>
+              <MenuItem
+                onClick={() => {
+                  router.push("/");
+                  authStore.logout();
+                }}
+              >
+                Sign out
+              </MenuItem>
             </MenuList>
           </Menu>
         ) : (
