@@ -7,10 +7,11 @@ import responseUtilities from "./api/shared/middlewares/responseUtilities";
 import v1Router from "./api/v1/routes";
 
 const app = express();
+const whitelist = ["http://localhost:3000", "https://memoreel.aweayo.tech"];
 
 // Middlewares
 app.use(responseUtilities);
-app.use(cors({ origin: "*", exposedHeaders: ["X-API-TOKEN"] }));
+app.use(cors({ origin: whitelist, exposedHeaders: ["X-API-TOKEN"] }));
 app.use(express.json());
 app.use(morgan("dev"));
 
