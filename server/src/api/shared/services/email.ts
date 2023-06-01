@@ -29,7 +29,7 @@ class EmailService {
       email,
       subject: "Verify Your Email",
       template: "verification",
-      variables: { link: `https://aweayo.tech?t=${token}` },
+      variables: { link: `http://localhost:3000/auth/verify?token=${token}` },
     };
 
     return await this.sendMail(options);

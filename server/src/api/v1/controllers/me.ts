@@ -85,7 +85,6 @@ class UserController {
       columns: {
         bucketKey: false,
         confirmationToken: false,
-        deliveryToken: false,
       },
     });
 

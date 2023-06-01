@@ -67,14 +67,9 @@ export async function verifyEmailHandler(req: Request, res: Response) {
     where: (table, { eq }) => eq(table.confirmationToken, data.token),
   });
 
-  if (!user)
+  if (!user) {
     throw new BadRequest("Invalid token", "INVALID_REQUEST_PARAMETERS");
-
-  if (user.verified)
-    throw new BadRequest(
-      "Email is already confirmed",
-      "EMAIL_ALREADY_VERIFIED"
-    );
+  }
 
   // Check if token is expired and resend a new token
   const now = moment();
@@ -101,7 +96,7 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
     throw new BadRequest(
       "Token Expired. New email has been sent",
-      "INVALID_REQUEST_PARAMETERS"
+      "EMAIL_TOKEN_EXPIRED"
     );
   }
 

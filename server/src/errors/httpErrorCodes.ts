@@ -6,7 +6,8 @@ export type BadRequestErrorCode =
   | "INVALID_REQUEST_PARAMETERS"
   | "MISSING_REQUIRED_FIELD"
   | "INVALID_JSON_FORMAT"
-  | "EMAIL_ALREADY_VERIFIED";
+  | "EMAIL_ALREADY_VERIFIED"
+  | "EMAIL_TOKEN_EXPIRED";
 
 export type UnauthorizedErrorCode =
   | "EXPIRED_TOKEN"
