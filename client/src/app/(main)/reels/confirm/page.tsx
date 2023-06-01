@@ -23,8 +23,11 @@ export default function ReelConfirmation() {
   const searchParams = useSearchParams();
   const token = searchParams.get("token");
   const toast = useToast();
-  const { data, isSuccess, isError, error, isLoading } = useQuery({
+  const { isSuccess, isError, error, isLoading } = useQuery({
     queryFn: () => apiClient.post(`/reels/${token}/confirm`),
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    retry: false,
   });
 
   useEffect(() => {
