@@ -10,7 +10,7 @@
     "dev": "nodemon ./src/server.ts",
     "start": "node ./dist/server.js",
     "build": "tsc",
-    "build:digitalocean": "npm install --production=false && npm run build && npm ci"
+    "build:digitalocean": "npm install --production=false && npm run build && npm run db:push && npm ci"
   },
   "keywords": [],
   "author": "",
