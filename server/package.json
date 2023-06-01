@@ -7,6 +7,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:migrate": "drizzle-kit generate:mysql",
     "db:push": "ts-node ./src/db/migrate.ts",
+    "db:migrate:prod": "node ./dist/db/migrate.js",
     "dev": "nodemon ./src/server.ts",
     "start": "node ./dist/server.js",
     "build": "tsc",
