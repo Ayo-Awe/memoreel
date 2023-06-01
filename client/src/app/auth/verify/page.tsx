@@ -1,24 +1,29 @@
 "use client";
+import useStore from "@/hooks/useStore";
 import apiClient from "@/services/apiClient";
-import { Alert, Card, Center, Spinner, Text, useToast } from "@chakra-ui/react";
-import { useQuery } from "@tanstack/react-query";
-import { AxiosError } from "axios";
+import useAuthStore from "@/stateManagement/auth/store";
+import { Card, Center, Spinner, Text, useToast } from "@chakra-ui/react";
+import { useMutation } from "@tanstack/react-query";
 import Error from "next/error";
-import { redirect, useSearchParams } from "next/navigation";
-import { useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { FaPaperPlane } from "react-icons/fa";
 
 export default function EmailConfirmation() {
   const searchParams = useSearchParams();
+  const authStore = useStore(useAuthStore, (state) => state);
+  const router = useRouter();
   const token = searchParams.get("token");
   const toast = useToast();
-  const { data, isSuccess, isError, error, isLoading } = useQuery({
-    queryFn: () => apiClient.post(`/auth/register/verify`, { token }),
-  });
-
-  useEffect(() => {
-    if (isError) {
-      const { response } = error as any;
+  const { isSuccess, isError, error, isLoading } = useMutation({
+    mutationFn: () => apiClient.post(`/auth/register/verify`, { token }),
+    onSuccess: (response) => {
+      const token = response.headers["x-api-token"];
+      const user = response.data.data.user;
+      authStore?.login({ ...user, token });
+      setTimeout(() => router.push("/dashboard"), 2000);
+    },
+    onError: (error: any) => {
+      const { response } = error;
 
       if (response?.data.code === "EMAIL_TOKEN_EXPIRED") {
         toast({
@@ -30,8 +35,8 @@ export default function EmailConfirmation() {
           isClosable: true,
         });
       }
-    }
-  }, [isError, error]);
+    },
+  });
 
   if (!token) return <Error statusCode={404} />;
   return (
@@ -45,6 +50,8 @@ export default function EmailConfirmation() {
           marginX={"auto"}
           padding={"20"}
           marginTop={"16"}
+          shadow={"lg"}
+          mt={"10"}
         >
           <FaPaperPlane fontSize={"5rem"} color="#0096c6" />
           <Text fontSize={"24px"} mt={"8"} textAlign={"center"}>
