@@ -8,13 +8,16 @@ dotenv.config();
 // IIFE to run migration asynchronously
 (async () => {
   try {
-    console.log(dbConfig);
-    const connection = await mysql.createConnection(dbConfig);
+    const connection = await mysql.createConnection({
+      ...dbConfig,
+      ssl: "required",
+    });
     const db = drizzle(connection);
     await migrate(db, { migrationsFolder: "./migrations" });
     console.log("Migration successful!!!");
     process.exit(0);
   } catch (error: any) {
+    console.error(error);
     console.error("Migration failed");
     console.error(error.message);
     process.exit(1);
