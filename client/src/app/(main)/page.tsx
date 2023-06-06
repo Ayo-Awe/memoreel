@@ -76,7 +76,8 @@ export default function Home() {
           <ModalCloseButton />
           <ModalBody>
             Please check your email to confirm your reel so we can send it to
-            the future!
+            the future! Ensure to check your spam if you don&apos;t find the
+            mail in your inbox
           </ModalBody>
 
           <ModalFooter>
