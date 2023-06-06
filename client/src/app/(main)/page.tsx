@@ -105,19 +105,19 @@ export default function Home() {
             connected with the person you will become.
           </Text>
           <ButtonGroup mt={"8"} fontSize={"1rem"} width={"full"}>
-            <Link href="/#reel-form">
-              <Button
-                bg={"#0096C6"}
-                _hover={{ bg: "#11a7d7", textDecoration: "none" }}
-                color={"white"}
-                width={"full"}
-                maxW={"188px"}
-                height={"3rem"}
-                onClick={(e) => e.preventDefault()}
-              >
-                Make a Reel Now
-              </Button>
-            </Link>
+            <Button
+              bg={"#0096C6"}
+              _hover={{ bg: "#11a7d7", textDecoration: "none" }}
+              color={"white"}
+              width={"full"}
+              maxW={"188px"}
+              as={"a"}
+              height={"3rem"}
+              href="/#reel-form"
+              // onClick={(e) => e.preventDefault()}
+            >
+              Make a Reel Now
+            </Button>
           </ButtonGroup>
         </Box>
         <Box textAlign={"right"}>
