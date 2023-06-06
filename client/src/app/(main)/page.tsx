@@ -104,18 +104,18 @@ export default function Home() {
             connected with the person you will become.
           </Text>
           <ButtonGroup mt={"8"} fontSize={"1rem"} width={"full"}>
-            <Button
-              bg={"#0096C6"}
-              _hover={{ bg: "#11a7d7", textDecoration: "none" }}
-              color={"white"}
-              width={"full"}
-              maxW={"188px"}
-              height={"3rem"}
-              as={Link}
-              href="/#reel-form"
-            >
-              Make a Reel Now
-            </Button>
+            <Link href="/#reel-form">
+              <Button
+                bg={"#0096C6"}
+                _hover={{ bg: "#11a7d7", textDecoration: "none" }}
+                color={"white"}
+                width={"full"}
+                maxW={"188px"}
+                height={"3rem"}
+              >
+                Make a Reel Now
+              </Button>
+            </Link>
           </ButtonGroup>
         </Box>
         <Box textAlign={"right"}>
@@ -191,26 +191,29 @@ export default function Home() {
         </Text>
       </Box>
       <Box margin={"auto"} textAlign={"center"} fontSize={"3xl"} mt={"8"}>
-        <Icon
-          as={FaTwitter}
-          mr={"4"}
-          href="https://twitter.com/aweayo_"
-          _hover={{ cursor: "pointer" }}
-          color={"#0096C6"}
-        />
-        <Icon
-          as={FaGithub}
-          mr={"4"}
-          href="https://www.linkedin.com/in/aweayo/"
-          _hover={{ cursor: "pointer" }}
-          color={"#0096C6"}
-        />
-        <Icon
-          as={FaLinkedin}
-          href="https://github.com/Ayo-Awe/"
-          _hover={{ cursor: "pointer" }}
-          color={"#0096C6"}
-        />
+        <a href="https://twitter.com/aweayo_">
+          <Icon
+            as={FaTwitter}
+            mr={"4"}
+            _hover={{ cursor: "pointer" }}
+            color={"#0096C6"}
+          />
+        </a>
+        <a href="https://github.com/Ayo-Awe/">
+          <Icon
+            as={FaGithub}
+            mr={"4"}
+            _hover={{ cursor: "pointer" }}
+            color={"#0096C6"}
+          />
+        </a>
+        <a href="https://www.linkedin.com/in/aweayo/">
+          <Icon
+            as={FaLinkedin}
+            _hover={{ cursor: "pointer" }}
+            color={"#0096C6"}
+          />
+        </a>
       </Box>
     </>
   );
