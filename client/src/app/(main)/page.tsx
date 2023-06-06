@@ -113,6 +113,7 @@ export default function Home() {
                 width={"full"}
                 maxW={"188px"}
                 height={"3rem"}
+                onClick={(e) => e.preventDefault()}
               >
                 Make a Reel Now
               </Button>
