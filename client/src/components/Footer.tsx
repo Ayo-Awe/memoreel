@@ -1,7 +1,5 @@
+import { satoshi } from "@/fonts";
 import { Box, Flex, Image, Text } from "@chakra-ui/react";
-import localFont from "next/font/local";
-
-const satoshi = localFont({ src: "./Satoshi-Variable.ttf" });
 
 export default function Footer() {
   return (

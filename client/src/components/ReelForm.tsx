@@ -18,10 +18,25 @@ import { z } from "zod";
 const twoDaysFromNow = moment().add(2, "d").toDate();
 
 const schema = z.object({
-  title: z.string().nonempty(),
-  email: z.string().email(),
+  title: z
+    .string({
+      invalid_type_error: "Title is required",
+      required_error: "Title is required",
+    })
+    .nonempty(),
+  email: z
+    .string({
+      invalid_type_error: "Email is required",
+      required_error: "Email is required",
+    })
+    .email("Please provide a valid email"),
   description: z.string().optional(),
-  deliveryDate: z.date().min(twoDaysFromNow),
+  deliveryDate: z
+    .date({
+      invalid_type_error: "Delivery date is required",
+      required_error: "Delivery date is required",
+    })
+    .min(twoDaysFromNow, "Delivery date must be at least 2 days from today"),
   video: z
     .custom<FileList>((v: any) => v[0] instanceof File, {
       message: "Video is required",
@@ -53,7 +68,11 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      <FormControl isInvalid={!isValid} isDisabled={isLoading}>
+      <FormControl
+        isInvalid={!isValid}
+        isDisabled={isLoading}
+        fontSize={"1rem"}
+      >
         <Flex gap={"3rem"}>
           <AspectRatio ratio={1.576} flexGrow={6}>
             <FormLabel
@@ -61,7 +80,6 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
               borderColor={"#0096C6"}
               borderWidth={"2px"}
               rounded={"2xl"}
-              maxH={"450px"}
             >
               <HiOutlineCloudArrowUp fontSize={"3.5rem"} color="#0096C6" />
               <Input

@@ -28,6 +28,7 @@ const HomeCard = ({ number, title, children }: Props) => {
           border={"1px"}
           fontWeight={"bold"}
           padding={0}
+          fontSize={"1rem"}
         >
           {number}
         </Box>
@@ -35,14 +36,14 @@ const HomeCard = ({ number, title, children }: Props) => {
       <Box textAlign={"center"} paddingX={"8"} paddingBottom={"8"}>
         <Text
           as="h2"
-          fontSize={"1.4rem"}
+          fontSize={"24px"}
           mt={"2.2rem"}
           fontWeight={"500"}
           color={"#222222"}
         >
           {title}
         </Text>
-        <Text as="p" mt={"0.5rem"} textAlign={"justify"}>
+        <Text as="p" mt={"0.5rem"} fontSize={"18px"} textAlign={"justify"}>
           {children}
         </Text>
       </Box>

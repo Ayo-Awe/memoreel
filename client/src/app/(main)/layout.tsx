@@ -67,9 +67,9 @@ export default function MainLayout({ children }: Props) {
     onSuccess: (response, variables, context) => {
       const token = response.headers["x-api-token"];
       const user = response.data.data.user;
-      authStore?.login({ ...user, token });
       setLoginModalOpen(false);
-      router.push("/dashboard");
+      router.push("/dashboard/reels");
+      authStore?.login({ ...user, token });
     },
     onError: (error: any, variables) => {
       console.log(variables);

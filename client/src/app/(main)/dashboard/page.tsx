@@ -6,8 +6,6 @@ import apiClient from "@/services/apiClient";
 import useAuthStore from "@/stateManagement/auth/store";
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
-import { redirect } from "next/navigation";
-import { useEffect } from "react";
 
 const Page = () => {
   const authStore = useStore(useAuthStore, (state) => state);
@@ -53,12 +51,6 @@ const Page = () => {
     },
   });
 
-  useEffect(() => {
-    if (authStore && !authStore.user) {
-      redirect("/");
-    }
-  }, [authStore]);
-
   return (
     <>
       {authStore ? (
@@ -82,11 +74,11 @@ const Page = () => {
                 Preview the video and when you’re sure it’s want you want, you
                 go ahead to send it to receive it in the future.
               </HomeCard>
-              <HomeCard number={1} title="Confirm your email">
+              <HomeCard number={2} title="Confirm your email">
                 Preview the video and when you’re sure it’s want you want, you
                 go ahead to send it to receive it in the future.
               </HomeCard>
-              <HomeCard number={1} title="Send Video">
+              <HomeCard number={3} title="Send Video">
                 Preview the video and when you’re sure it’s want you want, you
                 go ahead to send it to receive it in the future.
               </HomeCard>

@@ -1,6 +1,6 @@
 import useStore from "@/hooks/useStore";
 import useAuthStore from "@/stateManagement/auth/store";
-import { ChevronDownIcon, ViewIcon } from "@chakra-ui/icons";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
@@ -12,6 +12,8 @@ import {
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { FaFilm } from "react-icons/fa";
+import { HiCog, HiFilm, HiLogout } from "react-icons/hi";
 
 interface Props {
   onSignupClick: () => void;
@@ -25,7 +27,13 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
   return (
     <>
       <Flex justifyContent={"space-between"}>
-        <Image src="/logo.svg" alt="logo" />
+        <Image
+          src="/logo.svg"
+          alt="logo"
+          onClick={() => {
+            router.push("/");
+          }}
+        />
 
         {authStore?.user ? (
           <Menu>
@@ -40,15 +48,17 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
               {authStore.user.email}
             </MenuButton>
             <MenuList>
-              <MenuItem icon={<ViewIcon />} href={"/dashboard/reels"} as={Link}>
-                My videos
+              <MenuItem icon={<HiFilm />} href={"/dashboard/reels"} as={Link}>
+                My reels
               </MenuItem>
-              <MenuItem href={"/dashboard/settings"} as={Link}>
+              <MenuItem href={"/dashboard/settings"} as={Link} icon={<HiCog />}>
                 Manage account
               </MenuItem>
               <MenuItem
+                icon={<HiLogout />}
+                href={"/"}
+                as={Link}
                 onClick={() => {
-                  router.push("/");
                   authStore.logout();
                 }}
               >
