@@ -114,7 +114,6 @@ export default function Home() {
               as={"a"}
               height={"3rem"}
               href="/#reel-form"
-              // onClick={(e) => e.preventDefault()}
             >
               Make a Reel Now
             </Button>
@@ -159,6 +158,7 @@ export default function Home() {
         <ReelForm
           onSubmit={(data) => mutation.mutate(data)}
           isLoading={mutation.isLoading}
+          success={mutation.isSuccess}
         />
       </Box>
       <Box as="section" mt={"24"}>

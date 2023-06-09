@@ -59,6 +59,7 @@ const Page = () => {
             onSubmit={(data) => mutation.mutate(data)}
             email={authStore?.user?.email}
             isLoading={mutation.isLoading}
+            success={mutation.isSuccess}
           />
           <Box as="section" mt={"24"}>
             <Text fontSize={"4xl"} textAlign={"center"}>

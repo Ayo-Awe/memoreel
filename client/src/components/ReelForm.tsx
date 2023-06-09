@@ -1,21 +1,22 @@
 import {
-  AspectRatio,
   Box,
   Button,
-  Flex,
   FormControl,
   FormLabel,
   FormErrorMessage,
   Input,
   Textarea,
+  Grid,
+  GridItem,
 } from "@chakra-ui/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import moment from "moment";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { HiOutlineCloudArrowUp } from "react-icons/hi2";
 import { z } from "zod";
 
-const twoDaysFromNow = moment().add(2, "d").toDate();
+const twoDaysFromNow = moment().add(2, "d").startOf("d").toDate();
 
 const schema = z.object({
   title: z
@@ -50,9 +51,10 @@ interface Props {
   email?: string;
   onSubmit: (data: ReelFormData) => void;
   isLoading: boolean;
+  success: boolean;
 }
 
-const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
+const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
   const {
     handleSubmit,
     register,
@@ -66,6 +68,10 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
     },
   });
 
+  useEffect(() => {
+    if (success) reset();
+  }, [success]);
+
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl
@@ -73,13 +79,23 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
         isDisabled={isLoading}
         fontSize={"1rem"}
       >
-        <Flex gap={"3rem"}>
-          <AspectRatio ratio={1.576} flexGrow={6}>
+        <Grid gap={"3rem"} templateColumns={"repeat(10, 1fr)"}>
+          <Box
+            as={GridItem}
+            colSpan={6}
+            w={"full"}
+            aspectRatio={16 / 9}
+            border={"dashed"}
+            borderColor={"#0096C6"}
+            borderWidth={"2px"}
+            rounded={"2xl"}
+          >
             <FormLabel
-              border={"dashed"}
-              borderColor={"#0096C6"}
-              borderWidth={"2px"}
-              rounded={"2xl"}
+              w={"full"}
+              h={"full"}
+              display={"flex"}
+              alignItems={"center"}
+              justifyContent={"center"}
             >
               <HiOutlineCloudArrowUp fontSize={"3.5rem"} color="#0096C6" />
               <Input
@@ -100,9 +116,16 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
                 </FormErrorMessage>
               )}
             </FormLabel>
-          </AspectRatio>
+          </Box>
 
-          <Box maxW={"2xl"} marginX={"auto"} color={"#909090"} flexGrow={1}>
+          <Box
+            as={GridItem}
+            maxW={"2xl"}
+            marginX={"auto"}
+            color={"#909090"}
+            colSpan={4}
+            w={"full"}
+          >
             <FormLabel htmlFor="form-title">Video Title</FormLabel>
             <Input
               type="text"
@@ -145,6 +168,7 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
             </FormLabel>
             <Input
               id="form-date"
+              min={moment().add(2, "d").format("YYYY-MM-DD")}
               type="date"
               {...register("deliveryDate", { valueAsDate: true })}
               isInvalid={Boolean(errors.deliveryDate)}
@@ -163,7 +187,7 @@ const ReelForm = ({ email, onSubmit, isLoading }: Props) => {
               Send Now
             </Button>
           </Box>
-        </Flex>
+        </Grid>
       </FormControl>
     </form>
   );

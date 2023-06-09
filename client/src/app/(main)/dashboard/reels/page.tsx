@@ -113,7 +113,7 @@ export default function ReelConfirmation() {
           color={"white"}
           _hover={{ bg: "#11a7d7" }}
           as={Link}
-          href={"/dashboard"}
+          href={"/dashboard/reels/send"}
         >
           Send a video <Icon as={FaPaperPlane} ml={"3"} />
         </Button>
