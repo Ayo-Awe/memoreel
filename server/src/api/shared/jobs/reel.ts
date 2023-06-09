@@ -6,11 +6,12 @@ import { eq } from "drizzle-orm";
 import emailService from "../services/email";
 import { buildDeliveryLink } from "../utils/deliveryHelpers";
 import { MissingReelError } from "../../../errors/jobErrors";
+import moment from "moment";
 
 export interface DeliveryData {
   title: string;
   description: string | null;
-  createdAt: Date;
+  createdAt: string;
   link: string;
 }
 
@@ -38,7 +39,7 @@ export default function (agenda: Agenda) {
         .where(eq(reels.id, reel.id));
 
       const payload: DeliveryData = {
-        createdAt: reel.createdAt,
+        createdAt: moment(reel.createdAt).format("dddd, MMMM Do YYYY"),
         title: reel.title,
         description: reel.description,
         link: buildDeliveryLink(deliveryToken),

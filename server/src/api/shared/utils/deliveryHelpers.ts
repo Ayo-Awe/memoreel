@@ -1,3 +1,3 @@
 export function buildDeliveryLink(deliveryToken: string) {
-  return `https://aweayo.tech?t=${deliveryToken}`; // placeholder
+  return `${process.env.CLIENT_URL}/reels/${deliveryToken}`;
 }
