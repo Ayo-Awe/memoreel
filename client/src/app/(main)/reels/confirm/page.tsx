@@ -21,7 +21,7 @@ import { FaPaperPlane } from "react-icons/fa";
 export default function ReelConfirmation() {
   const authStore = useStore(useAuthStore, (state) => state);
   const searchParams = useSearchParams();
-  const token = searchParams.get("token");
+  const token = searchParams?.get("token");
   const toast = useToast();
   const { isSuccess, isError, error, isLoading } = useQuery({
     queryFn: () => apiClient.post(`/reels/${token}/confirm`),
