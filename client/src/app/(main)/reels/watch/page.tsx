@@ -1,21 +1,22 @@
 "use client";
+
 import apiClient from "@/services/apiClient";
 import { Grid, GridItem, Spinner, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
+import Error from "next/error";
+import { useSearchParams } from "next/navigation";
 import ReactPlayer from "react-player";
 
-interface Props {
-  params: {
-    token: string;
-  };
-}
-
-export default function ReelDeliveryPage({ params }: Props) {
+export default function ReelDeliveryPage() {
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("w");
   const { data, isSuccess, isError, error, isLoading } = useQuery({
-    queryKey: ["reels", params.token],
-    queryFn: () => apiClient.get(`/reels/${params.token}`),
+    queryKey: ["reels", token],
+    queryFn: () => apiClient.get(`/reels/${token}`),
   });
+
+  if (!token) return <Error statusCode={404} />;
 
   return (
     <>

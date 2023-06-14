@@ -1,7 +1,6 @@
 import {
   Box,
   Button,
-  ButtonGroup,
   Center,
   Grid,
   GridItem,
@@ -74,7 +73,7 @@ const ReelCard = ({
             rightIcon={<FaClock />}
             isDisabled={status !== "delivered"}
             as={Link}
-            href={`/reels/${deliveryToken}`}
+            href={`/reels/watch?w=${deliveryToken}`}
             maxW={"9rem"}
             w={"full"}
           >
