@@ -1,16 +1,8 @@
 "use client";
 import apiClient from "@/services/apiClient";
-import {
-  Box,
-  Grid,
-  GridItem,
-  SimpleGrid,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Grid, GridItem, Spinner, Text } from "@chakra-ui/react";
 import { useQuery } from "@tanstack/react-query";
 import moment from "moment";
-import { useEffect } from "react";
 import ReactPlayer from "react-player";
 
 interface Props {
@@ -24,12 +16,6 @@ export default function ReelDeliveryPage({ params }: Props) {
     queryKey: ["reels", params.token],
     queryFn: () => apiClient.get(`/reels/${params.token}`),
   });
-
-  useEffect(() => {
-    if (isSuccess) {
-      console.log(data.data.data.url);
-    }
-  }, [isSuccess]);
 
   return (
     <>
