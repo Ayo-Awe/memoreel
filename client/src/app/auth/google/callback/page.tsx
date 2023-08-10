@@ -27,7 +27,7 @@ export default function Page() {
   useEffect(() => {
     if (code) {
       loginUser(code);
-      router.push("/dashboard");
+      router.push("/dashboard/reels");
     }
   }, [code, router]);
 

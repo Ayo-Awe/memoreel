@@ -43,7 +43,7 @@ export default function EmailConfirmation() {
       const token = data.headers["x-api-token"];
       const user = data.data.data.user;
       authStore?.login({ ...user, token });
-      setTimeout(() => router.push("/dashboard"), 2000);
+      setTimeout(() => router.push("/dashboard/reels"), 2000);
     }
   }, [isError, error, isSuccess]);
 
