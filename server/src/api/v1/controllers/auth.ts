@@ -324,7 +324,7 @@ export async function googleOauthUrlHandler(req: Request, res: Response) {
       "https://www.googleapis.com/auth/userinfo.email",
       "openid",
     ],
-    redirect_uri: "http://localhost:3000/auth/google/callback",
+    redirect_uri: process.env.CLIENT_URL + "/auth/google/callback",
   });
 
   res.ok({ authorizationUrl });
