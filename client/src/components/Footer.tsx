@@ -12,7 +12,12 @@ export default function Footer() {
         bg={"#fafafa"}
       >
         <Image src="/logo.svg" alt="logo" />
-        <Text mt={"4"} fontWeight={500} className={satoshi.className}>
+        <Text
+          mt={"4"}
+          fontWeight={500}
+          className={satoshi.className}
+          textAlign={"center"}
+        >
           Designed by{" "}
           <Text
             as={"a"}
