@@ -3,7 +3,7 @@ import { Box, Flex, Image, Text } from "@chakra-ui/react";
 
 export default function Footer() {
   return (
-    <Box flexShrink={0}>
+    <Box flexShrink={0} px={"6"}>
       <hr className="footer" />
       <Flex
         py={"8"}
