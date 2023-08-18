@@ -90,6 +90,15 @@ export default function MainLayout({ children }: Props) {
     <>
       {authStore ? (
         <>
+          <section className="main">
+            <NavBar
+              onSignupClick={() => setSignupModalOpen(true)}
+              onLoginClick={() => setLoginModalOpen(true)}
+            />
+            <Box paddingY={"10"} paddingX={"6"}>
+              {children}
+            </Box>
+          </section>
           <SignupModal
             isOpen={isSignupModalOpen}
             onClose={() => setSignupModalOpen(false)}
@@ -102,13 +111,6 @@ export default function MainLayout({ children }: Props) {
             onSubmit={(data) => loginMutation.mutate(data)}
             isLoading={loginMutation.isLoading}
           />
-          <section className="main">
-            <NavBar
-              onSignupClick={() => setSignupModalOpen(true)}
-              onLoginClick={() => setLoginModalOpen(true)}
-            />
-            <Box paddingY={"10"}>{children}</Box>
-          </section>
           <Footer />
         </>
       ) : (

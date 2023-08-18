@@ -79,10 +79,17 @@ const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
         isDisabled={isLoading}
         fontSize={"1rem"}
       >
-        <Grid gap={"3rem"} templateColumns={"repeat(10, 1fr)"}>
+        <Grid
+          gap={"3rem"}
+          templateColumns={[
+            "repeat(1, 1fr)",
+            "repeat(1, 1fr)",
+            "repeat(10, 1fr)",
+          ]}
+        >
           <Box
             as={GridItem}
-            colSpan={6}
+            colSpan={[1, 1, 6]}
             w={"full"}
             aspectRatio={16 / 9}
             border={"dashed"}
@@ -123,7 +130,7 @@ const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
             maxW={"2xl"}
             marginX={"auto"}
             color={"#909090"}
-            colSpan={4}
+            colSpan={[1, 1, 4]}
             w={"full"}
           >
             <FormLabel htmlFor="form-title">Video Title</FormLabel>

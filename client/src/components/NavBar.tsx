@@ -26,10 +26,11 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
 
   return (
     <>
-      <Flex justifyContent={"space-between"}>
+      <Flex justifyContent={"space-between"} paddingX={"6"}>
         <Image
           src="/logo.svg"
           alt="logo"
+          w={["24"]}
           onClick={() => {
             router.push("/");
           }}
@@ -69,21 +70,24 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
         ) : (
           <div>
             <Button
-              px={"8"}
+              px={["4", "8"]}
               backgroundColor="#0096C6"
               _hover={{ bg: "#11a7d7" }}
               onClick={onSignupClick}
               color={"white"}
+              fontSize={["md"]}
+              fontWeight={["normal"]}
             >
-              Sign Up
+              Sign up
             </Button>
             <Button
               backgroundColor={"#CCEAF4"}
-              ml={"5"}
-              px={"8"}
+              ml={["2.5", "5"]}
+              px={["4", "8"]}
               _hover={{ bg: "#d2f0fa" }}
               onClick={onLoginClick}
               color={"#0096C6"}
+              fontSize={["md"]}
             >
               Log in
             </Button>

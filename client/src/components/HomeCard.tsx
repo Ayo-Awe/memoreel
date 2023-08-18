@@ -7,7 +7,15 @@ interface Props {
 }
 const HomeCard = ({ number, title, children }: Props) => {
   return (
-    <Card width={"320px"} height={"328px"} rounded={"xl"} overflow={"hidden"}>
+    <Card
+      maxW={"480px"}
+      w={"full"}
+      height={"328px"}
+      rounded={"xl"}
+      overflow={"hidden"}
+      mb={"6"}
+      mx={"auto"}
+    >
       <Box
         height={"40%"}
         bgColor={"#cceaf4"}
@@ -43,7 +51,7 @@ const HomeCard = ({ number, title, children }: Props) => {
         >
           {title}
         </Text>
-        <Text as="p" mt={"0.5rem"} fontSize={"18px"} textAlign={"justify"}>
+        <Text as="p" mt={"0.5rem"} fontSize={"18px"} textAlign={"center"}>
           {children}
         </Text>
       </Box>

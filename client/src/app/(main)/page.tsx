@@ -90,14 +90,14 @@ export default function Home() {
       <SimpleGrid as={"section"} columns={[1, 1, 2]} gap={"10"}>
         <Box className={satoshi.className}>
           <Text
-            fontSize={"2.5rem"}
-            mt={"12"}
+            fontSize={["1.9rem", "2.5rem"]}
+            mt={["8", "12"]}
             fontWeight={700}
-            lineHeight={"3rem"}
+            lineHeight={["2.2rem", "3rem"]}
           >
             Ever thought of sending a message to your future self?
           </Text>
-          <Text fontSize={"1.25rem"} mt={"8"}>
+          <Text fontSize={["1.1rem", "1.25rem"]} mt={"8"}>
             Welcome to Memoreel, the platform that allows you to easily create
             and send video messages to your future self. Do you want to set
             goals for the future, reflect on the past, or just say hello to your
@@ -125,6 +125,7 @@ export default function Home() {
             alt="hero image"
             maxWidth={"md"}
             float={"right"}
+            display={["none", "none", "inline-block"]}
           />
         </Box>
       </SimpleGrid>
@@ -137,6 +138,7 @@ export default function Home() {
           justifyContent={"center"}
           gap={"10"}
           mt={"12"}
+          // mx={"auto"}
         >
           <HomeCard number={1} title="Upload a video">
             Upload a video of the memory you&apos;d like to share with your
@@ -160,62 +162,6 @@ export default function Home() {
           isLoading={mutation.isLoading}
           success={mutation.isSuccess}
         />
-      </Box>
-      <Box as="section" mt={"24"}>
-        <Text fontSize={"4xl"} textAlign={"center"} fontWeight={500} mb={"8"}>
-          About Memoreel
-        </Text>
-
-        <Text
-          fontSize={"1.25rem"}
-          mt={"8"}
-          maxW={"3xl"}
-          textAlign={"center"}
-          margin={"auto"}
-        >
-          Have you ever wanted to capture a special moment and share it in a
-          truly heartfelt way? That&apos;s exactly what inspired me to create
-          Memoreel. Hi, I&apos;m Ayomidipupo Awe, the developer behind this
-          incredible platform. I was deeply inspired by my own desire to go
-          beyond traditional letters and provide a way for people to send
-          meaningful videos instead. Like many of us, I&apos;ve always believed
-          that memories hold a unique power to connect us with our past and
-          shape our future. The FutureMe application sparked a fire within me to
-          create the Memoreel project in detail by visiting our GitHub
-          repository:{" "}
-          <Text
-            as={"a"}
-            href={"https://github.com/Ayo-Awe/memoreel"}
-            color={"#0096C6"}
-          >
-            Memoreel GitHub Repository
-          </Text>
-        </Text>
-      </Box>
-      <Box margin={"auto"} textAlign={"center"} fontSize={"3xl"} mt={"8"}>
-        <a href="https://twitter.com/aweayo_">
-          <Icon
-            as={FaTwitter}
-            mr={"4"}
-            _hover={{ cursor: "pointer" }}
-            color={"#0096C6"}
-          />
-        </a>
-        <a href="https://github.com/Ayo-Awe/">
-          <Icon
-            as={FaGithub}
-            mr={"4"}
-            _hover={{ cursor: "pointer" }}
-            color={"#0096C6"}
-          />
-        </a>
-        <a href="https://www.linkedin.com/in/aweayo/">
-          <Icon
-            as={FaLinkedin}
-            _hover={{ cursor: "pointer" }}
-            color={"#0096C6"}
-          />
-        </a>
       </Box>
     </>
   );
