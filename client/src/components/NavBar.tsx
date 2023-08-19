@@ -4,15 +4,17 @@ import { ChevronDownIcon } from "@chakra-ui/icons";
 import {
   Button,
   Flex,
+  Icon,
   Image,
   Menu,
   MenuButton,
   MenuItem,
   MenuList,
+  Text,
 } from "@chakra-ui/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FaFilm } from "react-icons/fa";
+import { FaFilm, FaUser } from "react-icons/fa";
 import { HiCog, HiFilm, HiLogout } from "react-icons/hi";
 
 interface Props {
@@ -40,13 +42,15 @@ export default function NavBar({ onSignupClick, onLoginClick }: Props) {
           <Menu>
             <MenuButton
               as={Button}
+              leftIcon={<FaUser />}
               rightIcon={<ChevronDownIcon />}
               bgColor={"white"}
               border={"1px"}
               borderColor={"#474747"}
               color={"#474747"}
+              rounded={"full"}
             >
-              {authStore.user.email}
+              <Text display={["none", "inline"]}>{authStore.user.email}</Text>
             </MenuButton>
             <MenuList>
               <MenuItem icon={<HiFilm />} href={"/dashboard/reels"} as={Link}>

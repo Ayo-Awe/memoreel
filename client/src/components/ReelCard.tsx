@@ -1,6 +1,7 @@
 import {
   Box,
   Button,
+  ButtonGroup,
   Center,
   Grid,
   GridItem,
@@ -10,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import moment from "moment";
 import Link from "next/link";
-import { FaClock, FaTrash } from "react-icons/fa";
+import { FaArrowRight, FaClock, FaTrash } from "react-icons/fa";
 
 import { HiFilm } from "react-icons/hi";
 
@@ -33,68 +34,93 @@ const ReelCard = ({
   id,
 }: Props) => {
   return (
-    <Grid
+    <Box
       border={"1px"}
       borderColor={"#d8d8d8"}
       rounded={"lg "}
       padding={"4"}
-      templateColumns={"repeat(6, 1fr)"}
-      alignItems={"center"}
       mb={"8"}
     >
-      <Icon as={HiFilm} fontSize={"8xl"} color={"#d8d8d8"} />
-      <Box textAlign={"center"} as={GridItem} colSpan={1}>
-        <Text fontSize={"sm"}>Title</Text>
-        <Text>{title}</Text>
-      </Box>
-      <Box textAlign={"center"}>
-        <Text fontSize={"sm"}>Date created</Text>
-        <Text>{moment(createdAt).format("Do MMMM, YYYY")}</Text>
-      </Box>
-      <Box textAlign={"center"} as={GridItem} colSpan={1}>
-        <Text fontSize={"sm"}>Delivery Date</Text>
-        <Text>{moment(deliveryDate).format("Do MMMM, YYYY")}</Text>
+      <Box
+        display={"flex"}
+        flexWrap={"wrap"}
+        justifyContent={"space-between"}
+        w={"full"}
+        alignItems={"center"}
+      >
+        <Text
+          fontSize={"lg"}
+          fontWeight={"semibold"}
+          color={"#0090c6"}
+          display={"inline-block"}
+          mb={"4"}
+        >
+          {title}
+        </Text>
+        <ButtonGroup gap={"2"} display={"inline-block"} mb={"4"}>
+          <Tooltip
+            label="You can't watch this video until it's delivered"
+            hasArrow
+            padding={"3"}
+            maxW={"12rem"}
+            bgColor={"#0096c6"}
+            color={"white"}
+            isDisabled={status === "delivered"}
+          >
+            <Button
+              bgColor={"#CCEAF4"}
+              color={"#0096c6"}
+              _hover={{ bg: "#d2f0fa" }}
+              // rightIcon={<FaClock />}
+              isDisabled={status !== "delivered"}
+              textAlign={"center"}
+              as={Link}
+              py={"2"}
+              href={`/reels/watch?w=${deliveryToken}`}
+              maxW={"9rem"}
+              display={"inline"}
+              fontSize={"sm"}
+            >
+              Watch
+            </Button>
+          </Tooltip>
+          <Button
+            variant={"outline"}
+            colorScheme="red"
+            display={"inline"}
+            border={"1px"}
+            maxW={"9rem"}
+            onClick={() => onDelete({ id, status })}
+            fontSize={"sm"}
+            h={"8"}
+          >
+            Delete
+          </Button>
+        </ButtonGroup>
       </Box>
 
-      <Center w={"full"} as={GridItem} colSpan={2}>
-        <Tooltip
-          label="You can't watch this video until it's delivered"
-          hasArrow
-          padding={"3"}
-          maxW={"12rem"}
-          bgColor={"#0096c6"}
-          color={"white"}
-          isDisabled={status === "delivered"}
-        >
-          <Button
-            bgColor={"#CCEAF4"}
-            color={"#0096c6"}
-            _hover={{ bg: "#d2f0fa" }}
-            rightIcon={<FaClock />}
-            isDisabled={status !== "delivered"}
-            as={Link}
-            href={`/reels/watch?w=${deliveryToken}`}
-            maxW={"9rem"}
-            w={"full"}
-          >
-            Watch Now
-          </Button>
-        </Tooltip>
-        <Button
-          variant={"outline"}
-          colorScheme="red"
-          border={"2px"}
-          w={"full"}
-          maxW={"9rem"}
-          flexGrow={1}
-          rightIcon={<FaTrash />}
-          ml={"4"}
-          onClick={() => onDelete({ id, status })}
-        >
-          Delete
-        </Button>
-      </Center>
-    </Grid>
+      <Box fontSize={"sm"}>
+        <Box textAlign={"center"} display={"inline-block"} mr={"6"}>
+          <Text fontWeight={"semibold"} color={"gray.500"}>
+            Date created
+          </Text>
+          <Text fontWeight={"bold"} color={"#474747"}>
+            {moment(createdAt).format("MMM D, YYYY")}
+          </Text>
+        </Box>
+        <Box display={"inline-flex"} mr={"4"}>
+          <FaArrowRight display={"inline"} color="#0096c6" />
+        </Box>
+        <Box textAlign={"center"} display={"inline-block"}>
+          <Text fontWeight={"semibold"} color={"gray.500"}>
+            Delivery Date
+          </Text>
+          <Text fontWeight={"bold"} color={"#474747"}>
+            {moment(deliveryDate).format("MMM D, YYYY")}
+          </Text>
+        </Box>
+      </Box>
+    </Box>
   );
 };
 

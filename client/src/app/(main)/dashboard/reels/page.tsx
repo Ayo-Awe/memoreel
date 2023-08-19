@@ -131,12 +131,12 @@ export default function ReelConfirmation() {
           </Tab>
         </TabList>
         <TabPanels>
-          <TabPanel>
+          <TabPanel padding={"0"}>
             {sentReels.map((reel: any) => (
               <ReelCard key={reel.id} {...reel} onDelete={mutation.mutate} />
             ))}
           </TabPanel>
-          <TabPanel>
+          <TabPanel padding={"0"}>
             {deliveredReels.map((reel: any) => (
               <ReelCard key={reel.id} {...reel} onDelete={mutation.mutate} />
             ))}

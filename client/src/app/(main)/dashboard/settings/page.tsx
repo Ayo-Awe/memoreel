@@ -176,7 +176,12 @@ const Page = () => {
           Send a video <Icon as={FaPaperPlane} ml={"3"} />
         </Button>
       </Box>
-      <Flex gap={"28"} justifyContent={"center"} mt={"4"}>
+      <Flex
+        gap={"28"}
+        justifyContent={"center"}
+        mt={"4"}
+        flexDirection={["column", "row"]}
+      >
         <Box
           as={"form"}
           border={"1px"}
