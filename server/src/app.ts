@@ -7,7 +7,12 @@ import responseUtilities from "./api/shared/middlewares/responseUtilities";
 import v1Router from "./api/v1/routes";
 
 const app = express();
-const whitelist = ["http://localhost:3000", "https://memoreel.aweayo.tech"];
+const whitelist = [
+  "http://localhost:3000",
+  "https://memoreel.aweayo.tech",
+  "https://memoreel.vercel.app",
+  process.env.CLIENT_URL,
+].filter(Boolean) as string[];
 
 // Middlewares
 app.use(responseUtilities);
