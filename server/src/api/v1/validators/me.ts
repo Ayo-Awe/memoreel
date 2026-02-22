@@ -30,6 +30,12 @@ export const editProfileValidator = function (payload: any) {
 
 export const createReelValidator = function (payload: any) {
   const schema = z.object({
+    bucketKey: z
+      .string({
+        invalid_type_error: "bucketKey must be a string",
+        required_error: "bucketKey is required",
+      })
+      .nonempty("bucketKey cannot be an empty string"),
     title: z
       .string({
         invalid_type_error: "title must be a string",

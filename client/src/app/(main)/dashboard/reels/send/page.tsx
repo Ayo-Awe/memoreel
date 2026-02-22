@@ -12,20 +12,29 @@ const Page = () => {
   const toast = useToast();
 
   const mutation = useMutation({
-    mutationFn: (data: any) => {
-      console.log(data);
-      const formData = new FormData();
-      formData.append("video", data.video);
-      formData.append("email", data.email);
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-      formData.append("deliveryDate", data.deliveryDate.toISOString());
-      return apiClient.post("/me/reels", formData, {
-        headers: {
-          Authorization: "Bearer " + authStore?.user?.token,
-          "Content-Type": "multipart/form-data",
-        },
+    mutationFn: async (data: any) => {
+      const authHeader = { Authorization: "Bearer " + authStore?.user?.token };
+
+      const { data: presignData } = await apiClient.get(
+        "/uploads/presigned-url",
+        { headers: authHeader }
+      );
+
+      await fetch(presignData.uploadUrl, {
+        method: "PUT",
+        body: data.video,
       });
+
+      return apiClient.post(
+        "/me/reels",
+        {
+          bucketKey: presignData.bucketKey,
+          title: data.title,
+          description: data.description,
+          deliveryDate: data.deliveryDate.toISOString(),
+        },
+        { headers: authHeader }
+      );
     },
     onSuccess: (data, variables) => {
       toast({

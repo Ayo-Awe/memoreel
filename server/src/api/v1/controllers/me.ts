@@ -45,20 +45,14 @@ class UserController {
   async createReelHandler(req: Request, res: Response) {
     const { email } = req.user!;
 
-    if (!req.file) {
-      throw new BadRequest("Missing video file", "MISSING_REQUIRED_FIELD");
-    }
-
     const { data, error } = validator.createReelValidator(req.body);
 
     if (error) {
-      // delete reel from s3
-      await s3Client.deleteObject({ Bucket: s3Bucket, Key: req.file!.key! });
       throw new BadRequest(error.message, error.code);
     }
 
     const payload: InferModel<typeof reels, "insert"> = {
-      bucketKey: req.file!.key!,
+      bucketKey: data.bucketKey,
       userEmail: email,
       title: data.title,
       deliveryDate: new Date(data.deliveryDate),

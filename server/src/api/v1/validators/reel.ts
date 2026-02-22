@@ -5,6 +5,12 @@ const MINIMUM_DAYS_TO_DELIVERY = 1;
 
 export const createReelValidator = function (payload: any) {
   const schema = z.object({
+    bucketKey: z
+      .string({
+        invalid_type_error: "bucketKey must be a string",
+        required_error: "bucketKey is required",
+      })
+      .nonempty("bucketKey cannot be an empty string"),
     email: z
       .string({
         invalid_type_error: "email must be a string",

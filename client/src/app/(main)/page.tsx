@@ -31,16 +31,22 @@ export default function Home() {
   const [isOpen, setOpen] = useState(false);
 
   const mutation = useMutation({
-    mutationFn: (data: any) => {
-      console.log(data);
-      const formData = new FormData();
-      formData.append("video", data.video);
-      formData.append("email", data.email);
-      formData.append("title", data.title);
-      formData.append("description", data.description);
-      formData.append("deliveryDate", data.deliveryDate.toISOString());
-      return apiClient.post("/reels", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+    mutationFn: async (data: any) => {
+      const { data: presignData } = await apiClient.get(
+        "/uploads/presigned-url"
+      );
+
+      await fetch(presignData.uploadUrl, {
+        method: "PUT",
+        body: data.video,
+      });
+
+      return apiClient.post("/reels", {
+        bucketKey: presignData.bucketKey,
+        email: data.email,
+        title: data.title,
+        description: data.description,
+        deliveryDate: data.deliveryDate.toISOString(),
       });
     },
     onSuccess: () => {

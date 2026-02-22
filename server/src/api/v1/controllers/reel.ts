@@ -10,7 +10,6 @@ import db from "../../../db";
 import { InferModel, eq } from "drizzle-orm";
 import { reels } from "../../../db/schema";
 import { createToken } from "../utils/tokenHelpers";
-import emailService from "../../shared/services/email";
 import agenda from "../../shared/config/agenda";
 import moment from "moment";
 import { s3Bucket, s3Client } from "../../shared/config/aws";
@@ -21,20 +20,14 @@ const REEL_URL_EXPIRES_IN = 15 * 60;
 
 class ReelController {
   async createReelHandler(req: Request, res: Response) {
-    if (!req.file) {
-      throw new BadRequest("Missing video file", "MISSING_REQUIRED_FIELD");
-    }
-
     const { data, error } = validator.createReelValidator(req.body);
 
     if (error) {
-      // delete reel from s3
-      await s3Client.deleteObject({ Bucket: s3Bucket, Key: req.file!.key! });
       throw new BadRequest(error.message, error.code);
     }
 
     const payload: InferModel<typeof reels, "insert"> = {
-      bucketKey: req.file!.key!,
+      bucketKey: data.bucketKey,
       userEmail: data.email,
       title: data.title,
       deliveryDate: new Date(data.deliveryDate),
@@ -45,13 +38,12 @@ class ReelController {
 
     let reelId: number;
 
-    // Create a new reel and send reel confirmation email
-    await db.transaction(async (tx) => {
-      reelId = (await tx.insert(reels).values(payload))[0].insertId;
-      await emailService.reelConfirmationEmail(
-        payload.userEmail,
-        payload.confirmationToken!
-      );
+    reelId = (await db.insert(reels).values(payload))[0].insertId;
+
+    await agenda.now("send-email", {
+      type: "reel-confirmation",
+      email: payload.userEmail,
+      variables: { token: payload.confirmationToken },
     });
 
     res.created({
@@ -176,12 +168,15 @@ class ReelController {
     }
 
     const token = createToken();
-    await db.transaction(async (tx) => {
-      await tx
-        .update(reels)
-        .set({ confirmationToken: token })
-        .where(eq(reels.id, reel.id));
-      await emailService.reelConfirmationEmail(reel.userEmail, token);
+    await db
+      .update(reels)
+      .set({ confirmationToken: token })
+      .where(eq(reels.id, reel.id));
+
+    await agenda.now("send-email", {
+      type: "reel-confirmation",
+      email: reel.userEmail,
+      variables: { token },
     });
 
     res.ok({ message: "Email sent successfully" });

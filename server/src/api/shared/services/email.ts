@@ -1,77 +1,59 @@
+import { render } from "@react-email/render";
+import resend from "../config/resend";
 import { DeliveryData } from "../jobs/reel";
-import mailgun, { mgDomain } from "../config/mailgun";
+import VerificationEmail from "../../../emails/verification";
+import ResetPasswordEmail from "../../../emails/reset-password";
+import ReelConfirmationEmail from "../../../emails/reel-confirmation";
+import ReelDeliveryEmail from "../../../emails/reel-delivery";
 
-interface MailOptions {
-  email: string;
-  subject: string;
-  template:
-    | "verification"
-    | "reel-confirmation"
-    | "reel-delivery"
-    | "welcome"
-    | "reset-password";
-  variables?: any;
-}
+const FROM = "Ayo from Memoreel <hello@usegivva.dev>";
 
 class EmailService {
-  private async sendMail(options: MailOptions) {
-    return await mailgun.messages.create(mgDomain, {
-      to: options.email,
-      subject: options.subject,
-      template: options.template,
-      from: "Ayo from Memoreel <hello@aweayo.me>",
-      "t:variables": JSON.stringify(options.variables),
+  async verificationEmail(email: string, token: string) {
+    const link = `${process.env.CLIENT_URL}/auth/verify?token=${token}`;
+    const html = await render(VerificationEmail({ link }));
+
+    return await resend.emails.send({
+      from: FROM,
+      to: email,
+      subject: "Verify Your Email",
+      html,
     });
   }
 
-  async verificationEmail(email: string, token: string) {
-    const options: MailOptions = {
-      email,
-      subject: "Verify Your Email",
-      template: "verification",
-      variables: {
-        link: `${process.env.CLIENT_URL}/auth/verify?token=${token}`,
-      },
-    };
-
-    return await this.sendMail(options);
-  }
-
   async resetPasswordEmail(email: string, token: string) {
-    const options: MailOptions = {
-      email,
-      subject: "Reset your password",
-      template: "reset-password",
-      variables: {
-        link: `${process.env.CLIENT_URL}/auth/reset-password?token=${token}`,
-      },
-    };
+    const link = `${process.env.CLIENT_URL}/auth/reset-password?token=${token}`;
+    const html = await render(ResetPasswordEmail({ link }));
 
-    return await this.sendMail(options);
+    return await resend.emails.send({
+      from: FROM,
+      to: email,
+      subject: "Reset your password",
+      html,
+    });
   }
 
   async reelConfirmationEmail(email: string, token: string) {
-    const options: MailOptions = {
-      email,
-      subject: "Reel Confirmation",
-      template: "reel-confirmation",
-      variables: {
-        link: `${process.env.CLIENT_URL}/reels/confirm?token=${token}`,
-      },
-    };
+    const link = `${process.env.CLIENT_URL}/reels/confirm?token=${token}`;
+    const html = await render(ReelConfirmationEmail({ link }));
 
-    return await this.sendMail(options);
+    return await resend.emails.send({
+      from: FROM,
+      to: email,
+      subject: "Reel Confirmation",
+      html,
+    });
   }
 
   async reelDeliveryEmail(email: string, data: DeliveryData) {
-    const options: MailOptions = {
-      email,
-      subject: "Your Reel Has Arrived",
-      template: "reel-delivery",
-      variables: data,
-    };
+    const html = await render(ReelDeliveryEmail(data));
 
-    return await this.sendMail(options);
+    return await resend.emails.send({
+      from: FROM,
+      to: email,
+      subject: "Your Reel Has Arrived",
+      html,
+    });
   }
 }
 

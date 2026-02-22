@@ -12,7 +12,7 @@ import {
   Forbidden,
   ResourceNotFound,
 } from "../../../errors/httpErrors";
-import emailService from "../../shared/services/email";
+import agenda from "../../shared/config/agenda";
 import { createLoginToken } from "../../shared/utils/authHelpers";
 import * as validators from "../validators/auth";
 import * as bcrypt from "bcrypt";
@@ -41,17 +41,19 @@ export async function registerHandler(req: Request, res: Response) {
 
   const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
-  await db.transaction(async (tx) => {
-    const hash = await bcrypt.hash(data.password, 10);
-    data.password = hash;
+  const hash = await bcrypt.hash(data.password, 10);
+  data.password = hash;
 
-    await tx.insert(users).values({
-      ...data,
-      confirmationToken,
-      confirmationTokenExpiresAt,
-    });
+  await db.insert(users).values({
+    ...data,
+    confirmationToken,
+    confirmationTokenExpiresAt,
+  });
 
-    await emailService.verificationEmail(data.email, confirmationToken);
+  await agenda.now("send-email", {
+    type: "verification",
+    email: data.email,
+    variables: { token: confirmationToken },
   });
 
   res.created({ message: "Email verification sent" });
@@ -82,16 +84,18 @@ export async function verifyEmailHandler(req: Request, res: Response) {
 
     const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
-    await db.transaction(async (tx) => {
-      await tx
-        .update(users)
-        .set({
-          confirmationToken,
-          confirmationTokenExpiresAt,
-        })
-        .where(eq(users.id, user.id));
+    await db
+      .update(users)
+      .set({
+        confirmationToken,
+        confirmationTokenExpiresAt,
+      })
+      .where(eq(users.id, user.id));
 
-      await emailService.verificationEmail(user.email, confirmationToken);
+    await agenda.now("send-email", {
+      type: "verification",
+      email: user.email,
+      variables: { token: confirmationToken },
     });
 
     throw new BadRequest(
@@ -144,13 +148,18 @@ export async function resendVerificationEmail(req: Request, res: Response) {
 
   const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
-  await db.transaction(async (tx) => {
-    const payload = {
+  await db
+    .update(users)
+    .set({
       confirmationToken,
       confirmationTokenExpiresAt,
-    };
-    await db.update(users).set(payload).where(eq(users.id, user.id));
-    await emailService.verificationEmail(user.email, confirmationToken);
+    })
+    .where(eq(users.id, user.id));
+
+  await agenda.now("send-email", {
+    type: "verification",
+    email: user.email,
+    variables: { token: confirmationToken },
   });
 
   res.ok({ message: "Verification email sent." });
@@ -198,13 +207,18 @@ export async function loginHandler(req: Request, res: Response) {
 
     const confirmationTokenExpiresAt = moment().add(30, "minutes").toDate();
 
-    await db.transaction(async (tx) => {
-      const payload = {
+    await db
+      .update(users)
+      .set({
         confirmationToken,
         confirmationTokenExpiresAt,
-      };
-      await tx.update(users).set(payload).where(eq(users.id, user.id));
-      await emailService.verificationEmail(user.email, confirmationToken);
+      })
+      .where(eq(users.id, user.id));
+
+    await agenda.now("send-email", {
+      type: "verification",
+      email: user.email,
+      variables: { token: confirmationToken },
     });
 
     throw new Forbidden(
@@ -242,9 +256,12 @@ export async function forgotPasswordHandler(req: Request, res: Response) {
     passwordTokenExpiresAt: moment().add(25, "minutes").toDate(),
   };
 
-  await db.transaction(async (tx) => {
-    await tx.update(users).set(payload).where(eq(users.id, user.id));
-    await emailService.resetPasswordEmail(user.email, payload.passwordToken);
+  await db.update(users).set(payload).where(eq(users.id, user.id));
+
+  await agenda.now("send-email", {
+    type: "reset-password",
+    email: user.email,
+    variables: { token: payload.passwordToken },
   });
 
   res.ok({ message: "Reset password email sent." });

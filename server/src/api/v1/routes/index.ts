@@ -4,6 +4,7 @@ import { welcomeHandler } from "../controllers";
 import authRouter from "./auth";
 import meRouter from "./me";
 import reelRouter from "./reel";
+import uploadRouter from "./upload";
 
 const router = express.Router();
 
@@ -12,5 +13,6 @@ router.get("/", welcomeHandler);
 router.use("/auth", authRouter);
 router.use("/me", meRouter);
 router.use("/reels", reelRouter);
+router.use("/uploads", uploadRouter);
 
 export default router;

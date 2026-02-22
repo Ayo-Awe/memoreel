@@ -1,13 +1,13 @@
 import { S3 } from "@aws-sdk/client-s3";
 
 export const s3Client = new S3({
-  forcePathStyle: false, // Configures to use subdomain/virtual calling format.
-  endpoint: "https://nyc3.digitaloceanspaces.com",
-  region: "us-east-1",
+  forcePathStyle: true,
+  endpoint: process.env.R2_ENDPOINT!,
+  region: "auto",
   credentials: {
-    accessKeyId: process.env.SPACES_KEY!,
-    secretAccessKey: process.env.SPACES_SECRET!,
+    accessKeyId: process.env.R2_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.R2_SECRET_ACCESS_KEY!,
   },
 });
 
-export const s3Bucket = "memoreel";
+export const s3Bucket = process.env.R2_BUCKET_NAME ?? "memoreel";
