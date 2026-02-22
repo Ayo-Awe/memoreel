@@ -50,11 +50,13 @@ type ReelFormData = z.infer<typeof schema>;
 interface Props {
   email?: string;
   onSubmit: (data: ReelFormData) => void;
+  onFileSelect: (file: File) => void;
   isLoading: boolean;
+  isUploading: boolean;
   success: boolean;
 }
 
-const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
+const ReelForm = ({ email, onSubmit, onFileSelect, isLoading, isUploading, success }: Props) => {
   const {
     handleSubmit,
     register,
@@ -76,7 +78,7 @@ const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <FormControl
         isInvalid={!isValid}
-        isDisabled={isLoading}
+        isDisabled={isLoading || isUploading}
         fontSize={"1rem"}
       >
         <Grid
@@ -111,7 +113,12 @@ const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
                 border={"dashed"}
                 textAlign={"center"}
                 display={"none"}
-                {...register("video")}
+                {...register("video", {
+                  onChange: (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) onFileSelect(file);
+                  },
+                })}
                 isInvalid={Boolean(errors.video)}
               />
               {watch("video") && watch("video").length > 0 ? (
@@ -189,7 +196,7 @@ const ReelForm = ({ email, onSubmit, isLoading, success }: Props) => {
               bgColor={"#0096C6"}
               color={"white"}
               type="submit"
-              isLoading={isLoading}
+              isLoading={isLoading || isUploading}
             >
               Send Now
             </Button>

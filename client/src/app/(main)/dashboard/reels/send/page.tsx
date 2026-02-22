@@ -6,13 +6,15 @@ import apiClient from "@/services/apiClient";
 import useAuthStore from "@/stateManagement/auth/store";
 import { Box, Flex, Spinner, Text, useToast } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
+import { useRef } from "react";
 
 const Page = () => {
   const authStore = useStore(useAuthStore, (state) => state);
   const toast = useToast();
+  const bucketKeyRef = useRef<string | null>(null);
 
-  const mutation = useMutation({
-    mutationFn: async (data: any) => {
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
       const authHeader = { Authorization: "Bearer " + authStore?.user?.token };
 
       const { data: presignData } = await apiClient.get(
@@ -20,15 +22,33 @@ const Page = () => {
         { headers: authHeader }
       );
 
-      await fetch(presignData.uploadUrl, {
+      await fetch(presignData.data.uploadUrl, {
         method: "PUT",
-        body: data.video,
+        body: file,
       });
+
+      bucketKeyRef.current = presignData.data.bucketKey;
+    },
+    onError: () => {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload video. Please try again.",
+        status: "error",
+        duration: 9000,
+        position: "top-left",
+        isClosable: true,
+      });
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: any) => {
+      const authHeader = { Authorization: "Bearer " + authStore?.user?.token };
 
       return apiClient.post(
         "/me/reels",
         {
-          bucketKey: presignData.bucketKey,
+          bucketKey: bucketKeyRef.current,
           title: data.title,
           description: data.description,
           deliveryDate: data.deliveryDate.toISOString(),
@@ -36,7 +56,8 @@ const Page = () => {
         { headers: authHeader }
       );
     },
-    onSuccess: (data, variables) => {
+    onSuccess: () => {
+      bucketKeyRef.current = null;
       toast({
         title: "Reel sent successfully",
         description: `Your reel has been shipped to the future.`,
@@ -46,9 +67,7 @@ const Page = () => {
         isClosable: true,
       });
     },
-    onError: (error: any, variables) => {
-      const code = error.response?.data.code;
-
+    onError: () => {
       toast({
         title: "Error",
         description: "An unknown error occurred",
@@ -66,8 +85,10 @@ const Page = () => {
         <>
           <ReelForm
             onSubmit={(data) => mutation.mutate(data)}
+            onFileSelect={(file) => uploadMutation.mutate(file)}
             email={authStore?.user?.email}
             isLoading={mutation.isLoading}
+            isUploading={uploadMutation.isLoading}
             success={mutation.isSuccess}
           />
           <Box as="section" mt={"24"}>
