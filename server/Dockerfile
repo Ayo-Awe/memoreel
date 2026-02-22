@@ -24,7 +24,10 @@ RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
 COPY migrations ./migrations
+COPY init.sh ./init.sh
+
+RUN chmod +x init.sh
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "node dist/db/migrate.js && node dist/server.js"]
+CMD ["sh", "init.sh"]
