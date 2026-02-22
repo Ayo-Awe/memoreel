@@ -27,4 +27,4 @@ COPY migrations ./migrations
 
 EXPOSE 8080
 
-CMD ["node", "dist/server.js"]
+CMD ["sh", "-c", "node dist/db/migrate.js && node dist/server.js"]
