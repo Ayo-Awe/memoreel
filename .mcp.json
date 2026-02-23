@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "dokploy-mcp": {
+      "type": "stdio",
+      "command": "bunx",
+      "args": ["-y", "@ahdev/dokploy-mcp"],
+      "env": {
+        "DOKPLOY_URL": "https://dokploy.usegivva.dev/api",
+        "DOKPLOY_API_KEY": "mcp_FCyYHRcCmCdVreamjKWLWNwTtgZyXSRqOlZLgvSSyyxrPvgDPxtFfGNHAUbYlofw"
+      }
+    }
+  }
+}

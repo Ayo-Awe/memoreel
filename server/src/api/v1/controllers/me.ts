@@ -61,6 +61,7 @@ class UserController {
       deliveryDate: new Date(data.deliveryDate),
       description: data.description,
       status: "shipped",
+      deliveryToken: createToken(),
     };
 
     // Create a new reel

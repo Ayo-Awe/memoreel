@@ -76,9 +76,10 @@ class ReelController {
     }
 
     await db.transaction(async (tx) => {
+      const deliveryToken = createToken();
       await tx
         .update(reels)
-        .set({ status: "shipped", confirmationToken: null })
+        .set({ status: "shipped", confirmationToken: null, deliveryToken })
         .where(eq(reels.id, reel.id));
       await agenda.schedule(reel.deliveryDate, "deliver-reel", {
         id: reel.id,
