@@ -23,26 +23,43 @@ import {
 } from "@chakra-ui/react";
 import { useMutation } from "@tanstack/react-query";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaGithub, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 export default function Home() {
   const toast = useToast();
   const [isOpen, setOpen] = useState(false);
+  const bucketKeyRef = useRef<string | null>(null);
 
-  const mutation = useMutation({
-    mutationFn: async (data: any) => {
+  const uploadMutation = useMutation({
+    mutationFn: async (file: File) => {
       const { data: presignData } = await apiClient.get(
         "/uploads/presigned-url"
       );
 
-      await fetch(presignData.uploadUrl, {
+      await fetch(presignData.data.uploadUrl, {
         method: "PUT",
-        body: data.video,
+        body: file,
       });
 
+      bucketKeyRef.current = presignData.data.bucketKey;
+    },
+    onError: () => {
+      toast({
+        title: "Upload failed",
+        description: "Failed to upload video. Please try again.",
+        status: "error",
+        duration: 9000,
+        position: "top-left",
+        isClosable: true,
+      });
+    },
+  });
+
+  const mutation = useMutation({
+    mutationFn: async (data: any) => {
       return apiClient.post("/reels", {
-        bucketKey: presignData.bucketKey,
+        bucketKey: bucketKeyRef.current,
         email: data.email,
         title: data.title,
         description: data.description,
@@ -50,6 +67,7 @@ export default function Home() {
       });
     },
     onSuccess: () => {
+      bucketKeyRef.current = null;
       toast({
         title: "Reel created successfully",
         status: "success",
@@ -59,9 +77,7 @@ export default function Home() {
       });
       setOpen(true);
     },
-    onError: (error: any) => {
-      const code = error.response?.data.code;
-
+    onError: () => {
       toast({
         title: "Error",
         description: "An unknown error occurred",
@@ -165,7 +181,9 @@ export default function Home() {
         </Text>
         <ReelForm
           onSubmit={(data) => mutation.mutate(data)}
+          onFileSelect={(file) => uploadMutation.mutate(file)}
           isLoading={mutation.isLoading}
+          isUploading={uploadMutation.isLoading}
           success={mutation.isSuccess}
         />
       </Box>
