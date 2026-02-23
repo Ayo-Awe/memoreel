@@ -15,6 +15,12 @@ import { FaArrowRight, FaClock, FaTrash } from "react-icons/fa";
 
 import { HiFilm } from "react-icons/hi";
 
+const VIEWABLE_DAYS_AFTER_DELIVERY = 2;
+
+const canViewBeforeDelivery = (deliveryDate: string) => {
+  return moment().diff(moment(deliveryDate), "d") <= VIEWABLE_DAYS_AFTER_DELIVERY;
+};
+
 interface Props {
   id: number;
   title: string;
@@ -58,32 +64,36 @@ const ReelCard = ({
           {title}
         </Text>
         <ButtonGroup gap={"2"} display={"inline-block"} mb={"4"}>
-          <Tooltip
-            label="You can't watch this video until it's delivered"
-            hasArrow
-            padding={"3"}
-            maxW={"12rem"}
-            bgColor={"#0096c6"}
-            color={"white"}
-            isDisabled={status === "delivered"}
-          >
-            <Button
-              bgColor={"#CCEAF4"}
-              color={"#0096c6"}
-              _hover={{ bg: "#d2f0fa" }}
-              // rightIcon={<FaClock />}
-              isDisabled={status !== "delivered"}
-              textAlign={"center"}
-              as={Link}
-              py={"2"}
-              href={`/reels/watch?w=${deliveryToken}`}
-              maxW={"9rem"}
-              display={"inline"}
-              fontSize={"sm"}
-            >
-              Watch
-            </Button>
-          </Tooltip>
+          {(() => {
+            const isViewable = status === "delivered" || canViewBeforeDelivery(deliveryDate);
+            return (
+              <Tooltip
+                label={isViewable ? "" : "You can't watch this video until it's delivered"}
+                hasArrow
+                padding={"3"}
+                maxW={"12rem"}
+                bgColor={"#0096c6"}
+                color={"white"}
+                isDisabled={isViewable}
+              >
+                <Button
+                  bgColor={"#CCEAF4"}
+                  color={"#0096c6"}
+                  _hover={{ bg: "#d2f0fa" }}
+                  isDisabled={!isViewable}
+                  textAlign={"center"}
+                  as={Link}
+                  py={"2"}
+                  href={`/reels/watch?w=${deliveryToken}`}
+                  maxW={"9rem"}
+                  display={"inline"}
+                  fontSize={"sm"}
+                >
+                  Watch
+                </Button>
+              </Tooltip>
+            );
+          })()}
           <Button
             variant={"outline"}
             colorScheme="red"

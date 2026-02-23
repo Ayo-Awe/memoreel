@@ -12,6 +12,9 @@ import { s3Bucket, s3Client } from "../../shared/config/aws";
 import { createToken } from "../utils/tokenHelpers";
 import agenda from "../../shared/config/agenda";
 import { buildPublicUrl } from "../utils/reelHelpers";
+import moment from "moment";
+
+const VIEWABLE_DAYS_AFTER_DELIVERY = 2;
 
 class UserController {
   async getProfile(req: Request, res: Response) {
@@ -139,7 +142,9 @@ class UserController {
       );
     }
 
-    if (reel.status !== "delivered") {
+    const canViewBeforeDelivery = moment().diff(moment(reel.deliveryDate), "d") <= VIEWABLE_DAYS_AFTER_DELIVERY;
+
+    if (reel.status !== "delivered" && !canViewBeforeDelivery) {
       throw new Forbidden(
         `Reel cannot be accessed before it is delivered.`,
         "ACCESS_DENIED"
@@ -180,7 +185,9 @@ class UserController {
       );
     }
 
-    if (reel.status !== "delivered") {
+    const canViewBeforeDelivery = moment().diff(moment(reel.deliveryDate), "d") <= VIEWABLE_DAYS_AFTER_DELIVERY;
+
+    if (reel.status !== "delivered" && !canViewBeforeDelivery) {
       throw new Forbidden(
         `Reel cannot be accessed before it is delivered.`,
         "ACCESS_DENIED"

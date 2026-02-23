@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { validateAndFormat } from "../utils/errorHelpers";
 import moment from "moment";
-const MINIMUM_DAYS_TO_DELIVERY = 1;
+const MINIMUM_DAYS_TO_DELIVERY = 7;
 
 export const createReelValidator = function (payload: any) {
   const schema = z.object({
